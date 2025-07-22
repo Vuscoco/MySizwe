@@ -1,0 +1,1037 @@
+/* Agenda Event Styling */
+.booking-type.agenda {
+    background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+    color: white;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.booking-card.agenda-event {
+    border-left: 4px solid #8e44ad;
+    background: linear-gradient(135deg, #f8f4ff 0%, #f0e6ff 100%);
+}
+
+.booking-card.agenda-event .booking-title {
+    color: #8e44ad;
+    font-weight: 600;
+}
+
+.agenda-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: rgba(142, 68, 173, 0.1);
+    border-radius: 6px;
+}
+
+.agenda-progress-bar {
+    flex-grow: 1;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.agenda-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8e44ad 0%, #9b59b6 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.agenda-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #8e44ad;
+}
+
+.agenda-indicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 12px;
+    background: #8e44ad;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(142, 68, 173, 0.3);
+}
+
+/* Modal Styling */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid #e1e8ed;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 16px 24px;
+    border-bottom: 1px solid #e1e8ed;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px 16px 0 0;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+    transform: scale(1.1);
+}
+
+/* Form Styling */
+.booking-form {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+    color: #2c3e50;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #006400;
+    box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #e1e8ed;
+    margin-top: 20px;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 100, 0, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #004d00 0%, #006400 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.4);
+}
+
+.btn-secondary {
+    background: white;
+    color: #6c757d;
+    border: 2px solid #e1e8ed;
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    color: #495057;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
+/* Summary Panel Styling */
+.summary-panel {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e8ed;
+    overflow: hidden;
+}
+
+.summary-header {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    padding: 20px 24px;
+    text-align: center;
+}
+
+.summary-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.summary-date {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.summary-content {
+    padding: 24px;
+    min-height: 300px;
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.no-bookings-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.quick-add-btn {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: all 0.2s ease;
+}
+
+.quick-add-btn:hover {
+    background: linear-gradient(135deg, #004d00 0%, #006400 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
+}
+
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.booking-card {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.booking-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    flex: 1;
+}
+
+.booking-type {
+    background: #e9ecef;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.booking-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.info-value {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.booking-description {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e9ecef;
+}
+
+.description-text {
+    margin: 4px 0 0 0;
+    color: #495057;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.summary-footer {
+    background: #f8f9fa;
+    padding: 20px 24px;
+    border-top: 1px solid #e1e8ed;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e1e8ed;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #006400;
+}
+
+/* Calendar Footer */
+.calendar-footer {
+    background: white;
+    padding: 20px 24px;
+    border-top: 1px solid #e1e8ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selected-date-info {
+    flex: 1;
+}
+
+.selected-date-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 4px 0;
+}
+
+.booking-count {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.add-booking-btn {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 100, 0, 0.3);
+}
+
+.add-booking-btn:hover {
+    background: linear-gradient(135deg, #004d00 0%, #006400 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.4);
+}
+
+/* Basic Timetable Page Styling */
+.timetable-page {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.program-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Main Container for Calendar and Booking Form */
+.timetable-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Calendar Section */
+.calendar-section {
+    width: 100%;
+}
+
+/* Calendar Styles */
+.calendar-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+    border: 1px solid #e1e8ed;
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    position: relative;
+}
+
+.calendar-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    pointer-events: none;
+}
+
+.nav-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.nav-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:active {
+    transform: translateY(0);
+}
+
+.calendar-title-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.month-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tranche-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.tranche-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tranche-number {
+    font-size: 1rem;
+    font-weight: 800;
+    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: white;
+    gap: 0;
+}
+
+.day-header {
+    background: #f8f9fa;
+    padding: 16px 8px;
+    text-align: center;
+    font-weight: 700;
+    color: #495057;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+    position: relative;
+}
+
+.day-header:last-child {
+    border-right: none;
+}
+
+.day-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #006400, #008000);
+    opacity: 0.3;
+}
+
+.calendar-day {
+    padding: 20px 8px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-right: 1px solid #e1e5e9;
+    border-bottom: 1px solid #e1e5e9;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: white;
+    margin: 0;
+}
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+.calendar-day:hover {
+    background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 100, 0, 0.2);
+    border-radius: 8px;
+    margin: 2px;
+    z-index: 2;
+}
+
+.calendar-day.today {
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    margin: 2px;
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
+    transform: scale(1.05);
+    position: relative;
+    z-index: 3;
+}
+
+.calendar-day.today::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #006400, #008000);
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.calendar-day.selected {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    margin: 2px;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+    transform: scale(1.05);
+    position: relative;
+    z-index: 3;
+}
+
+.calendar-day.selected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.calendar-day.empty {
+    background: #fafbfc;
+    cursor: default;
+    color: #dee2e6;
+}
+
+.calendar-day.empty:hover {
+    background: #fafbfc;
+    transform: none;
+    box-shadow: none;
+    margin: 0;
+    border-radius: 0;
+}
+
+/* Weekend styling */
+.calendar-day:nth-child(7n),
+.calendar-day:nth-child(7n+1) {
+    background: #fafbfc;
+}
+
+.calendar-day:nth-child(7n):hover,
+.calendar-day:nth-child(7n+1):hover {
+    background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+}
+
+.calendar-day:nth-child(7n).empty,
+.calendar-day:nth-child(7n+1).empty {
+    background: #f8f9fa;
+}
+
+/* Booking Section */
+.booking-section {
+    width: 100%;
+}
+
+.booking-form-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    border: 1px solid #e1e8ed;
+    position: sticky;
+    top: 20px;
+}
+
+.booking-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 20px 0;
+    text-align: center;
+}
+
+.selected-date {
+    background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+    border: 1px solid #006400;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    color: #006400;
+    font-size: 0.9rem;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.form-input {
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: #2c3e50;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #006400;
+    box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1);
+}
+
+.form-input::placeholder {
+    color: #adb5bd;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-save {
+    flex: 1;
+    background: linear-gradient(135deg, #006400 0%, #008000 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-save:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
+}
+
+.btn-save:disabled {
+    background: #adb5bd;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-cancel {
+    flex: 1;
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .timetable-container {
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .timetable-page {
+        padding: 15px;
+    }
+
+    .program-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .timetable-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .booking-form-wrapper {
+        position: static;
+        padding: 20px;
+    }
+    
+    .calendar-wrapper {
+        border-radius: 8px;
+    }
+
+    .calendar-header {
+        padding: 12px 16px;
+    }
+
+    .calendar-title-section {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .month-title {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+    }
+
+    .tranche-indicator {
+        padding: 2px 8px;
+        gap: 4px;
+    }
+
+    .tranche-label {
+        font-size: 0.65rem;
+    }
+
+    .tranche-number {
+        width: 20px;
+        height: 20px;
+        font-size: 0.85rem;
+    }
+
+    .nav-button {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .day-header {
+        padding: 12px 6px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-day {
+        padding: 16px 6px;
+        font-size: 1rem;
+        min-height: 60px;
+    }
+
+    .booking-title {
+        font-size: 1.2rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-wrapper {
+        border-radius: 6px;
+    }
+
+    .calendar-header {
+        padding: 10px 14px;
+    }
+    
+    .calendar-title-section {
+        gap: 2px;
+    }
+
+    .month-title {
+        font-size: 1rem;
+        margin-bottom: 1px;
+    }
+
+    .tranche-indicator {
+        padding: 1px 6px;
+        gap: 2px;
+    }
+
+    .tranche-label {
+        font-size: 0.6rem;
+    }
+
+    .tranche-number {
+        width: 18px;
+        height: 18px;
+        font-size: 0.75rem;
+    }
+
+    .nav-button {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .day-header {
+        padding: 10px 4px;
+        font-size: 0.75rem;
+    }
+
+    .calendar-day {
+        padding: 12px 4px;
+        font-size: 0.9rem;
+        min-height: 50px;
+    }
+
+    .booking-form-wrapper {
+        padding: 16px;
+    }
+
+    .booking-title {
+        font-size: 1.1rem;
+    }
+
+    .form-input {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+} 
