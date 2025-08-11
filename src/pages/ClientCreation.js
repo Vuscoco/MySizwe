@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HubSpotLayout from '../components/HubSpotLayout';
+import FormGuide from '../components/FormGuide';
 import '../css/ClientCreation.css';
 
 const ClientCreation = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        clientType: 'regular', // 'regular' or 'seta'
+
         clientName: '',
         clientReg: '',
         clientAddress: '',
@@ -22,8 +23,8 @@ const ClientCreation = () => {
         paymentTerms: '30',
         qualificationType: '',
         qualificationLevel: '',
-        costPerLearner: '',
-        services: [{ type: 'trench1', rate: '', recurring: false }]
+
+        services: []
     });
 
     const [qualificationLevels, setQualificationLevels] = useState([]);
@@ -34,6 +35,8 @@ const ClientCreation = () => {
     const [formErrors, setFormErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [progress, setProgress] = useState(25);
+    const [showGuide, setShowGuide] = useState(false);
+    const [showServicesDropdown, setShowServicesDropdown] = useState(false);
 
     // Calculate form completion progress
     useEffect(() => {
@@ -50,8 +53,24 @@ const ClientCreation = () => {
         Object.keys(requiredFields).forEach(tab => {
             requiredFields[tab].forEach(field => {
                 totalFields++;
-                if (formData[field] && formData[field].toString().trim() !== '') {
-                    completedFields++;
+                const value = formData[field];
+                if (value && value.toString().trim() !== '') {
+                    // Additional validation for specific field types
+                    let isValid = true;
+                    
+                    if (field === 'contactEmail') {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        isValid = emailRegex.test(value);
+                    } else if (field === 'contactPhone') {
+                        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                        isValid = phoneRegex.test(value.replace(/\s/g, ''));
+                    } else if (field === 'retainer') {
+                        isValid = !isNaN(value) && parseFloat(value) > 0;
+                    }
+                    
+                    if (isValid) {
+                        completedFields++;
+                    }
                 }
             });
         });
@@ -60,12 +79,37 @@ const ClientCreation = () => {
         setProgress(newProgress);
     }, [formData]);
 
+    // Handle click outside services dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showServicesDropdown && !event.target.closest('.services-dropdown-container')) {
+                setShowServicesDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showServicesDropdown]);
+
     // Restore form data from sessionStorage when component mounts
     useEffect(() => {
         const savedData = sessionStorage.getItem('slaPreviewData');
         if (savedData) {
             try {
                 const parsedData = JSON.parse(savedData);
+                
+                // Clean up old services structure if it exists
+                if (parsedData.services && Array.isArray(parsedData.services)) {
+                    // If services contains objects, convert to string array
+                    if (parsedData.services.length > 0 && typeof parsedData.services[0] === 'object') {
+                        parsedData.services = [];
+                    }
+                } else {
+                    parsedData.services = [];
+                }
+                
                 setFormData(parsedData);
                 
                 // Restore SLA file information if it exists
@@ -103,7 +147,6 @@ const ClientCreation = () => {
                 }
                 break;
             case 'retainer':
-            case 'costPerLearner':
                 if (value && (isNaN(value) || parseFloat(value) < 0)) {
                     errors[name] = 'Please enter a valid amount';
                 }
@@ -199,10 +242,27 @@ const ClientCreation = () => {
         setFormData(prev => ({ ...prev, services: updatedServices }));
     };
 
+    const handleServiceRadioChange = (service) => {
+        setFormData(prev => {
+            const currentServices = prev.services || [];
+            let updatedServices;
+            
+            if (currentServices.includes(service)) {
+                // Remove service if already selected
+                updatedServices = currentServices.filter(s => s !== service);
+            } else {
+                // Add service if not selected
+                updatedServices = [...currentServices, service];
+            }
+            
+            return { ...prev, services: updatedServices };
+        });
+    };
+
     const addService = () => {
         setFormData(prev => ({
             ...prev,
-            services: [...prev.services, { type: 'trench1', rate: '', recurring: false }]
+            services: [...prev.services, { type: 'trench1', recurring: false }]
         }));
     };
 
@@ -289,14 +349,18 @@ const ClientCreation = () => {
             contactPhone: 'Phone Number',
             contactEmail: 'Email Address',
             seta: 'SETA',
-            service: 'Service Type',
             sdlNumber: 'SDL Number',
             moderator: 'Project Manager',
             retainer: 'Monthly Retainer',
             qualificationType: 'Qualification Type',
             qualificationLevel: 'Qualification Level',
-            costPerLearner: 'Cost per Learner'
+
         };
+
+        // Check for services array
+        if (!formData.services || formData.services.length === 0) {
+            errors.service = 'Services are required';
+        }
 
         Object.keys(requiredFields).forEach(field => {
             const value = formData[field];
@@ -318,16 +382,11 @@ const ClientCreation = () => {
         setIsSubmitting(true);
         
         try {
-            // Calculate total number of learners from all services
-            const totalLearners = formData.services.reduce((total, service) => {
-                return total + (parseInt(service.rate) || 0);
-            }, 0);
-
             // Create new client data for the Clients.js table with ALL form fields
             const newClient = {
                 id: Date.now(),
                 // Basic Information
-                clientType: formData.clientType || 'regular',
+
                 clientName: formData.clientName.trim(),
                 clientReg: formData.clientReg.trim(),
                 clientAddress: formData.clientAddress.trim(),
@@ -340,7 +399,7 @@ const ClientCreation = () => {
                 
                 // Business Details
                 seta: formData.seta?.toUpperCase() || '',
-                service: formData.service?.toUpperCase() || '',
+                service: formData.services ? formData.services.join(', ') : '',
                 sdlNumber: formData.sdlNumber.trim(),
                 moderator: formData.moderator.trim(),
                 qualificationType: formData.qualificationType || '',
@@ -349,7 +408,7 @@ const ClientCreation = () => {
                 // Financial Information
                 monthlyRetainer: parseFloat(formData.retainer) || 0,
                 paymentTerms: `${formData.paymentTerms || '30'} Days`,
-                costPerLearner: parseFloat(formData.costPerLearner) || 0,
+
                 totalValue: (parseFloat(formData.retainer) || 0) * 12, // Annual value
                 
                 // Additional Services with precise learner count
@@ -360,7 +419,7 @@ const ClientCreation = () => {
                 lastContact: new Date().toISOString().split('T')[0],
                 nextFollowUp: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                 createdAt: new Date().toISOString(),
-                totalLearners: totalLearners, // Precise tally of all learners
+
                 
                 // Files and Attachments
                 slaFile: slaFileName || null,
@@ -411,13 +470,40 @@ const ClientCreation = () => {
         const requiredFields = {
             basic: ['clientName', 'clientReg', 'clientAddress'],
             contact: ['contactPerson', 'contactPosition', 'contactPhone', 'contactEmail'],
-            business: ['seta', 'service', 'sdlNumber', 'moderator', 'qualificationType', 'qualificationLevel'],
-            financial: ['retainer', 'costPerLearner']
+            business: ['seta', 'sdlNumber', 'moderator', 'qualificationType', 'qualificationLevel'],
+            financial: ['retainer']
         };
+
+        // Special handling for services array
+        if (tabName === 'business') {
+            const businessFields = ['seta', 'sdlNumber', 'moderator', 'qualificationType', 'qualificationLevel'];
+            const businessCompleted = businessFields.every(field => formData[field] && formData[field].toString().trim() !== '');
+            const servicesCompleted = formData.services && formData.services.length > 0;
+            return businessCompleted && servicesCompleted ? 'completed' : 'incomplete';
+        }
 
         const fields = requiredFields[tabName] || [];
         const completed = fields.every(field => formData[field] && formData[field].toString().trim() !== '');
         return completed ? 'completed' : 'incomplete';
+    };
+
+    const handleGuideComplete = () => {
+        setShowGuide(false);
+    };
+
+    const handleGuideSkip = () => {
+        setShowGuide(false);
+    };
+
+    const startGuide = () => {
+        setShowGuide(true);
+        // Reset to first tab when starting guide
+        setActiveTab('basic');
+    };
+
+    // Handle tab changes from the guide
+    const handleTabChange = (newTab) => {
+        setActiveTab(newTab);
     };
 
     // (move all code from return into a variable)
@@ -437,6 +523,30 @@ const ClientCreation = () => {
                 </div>
             </div>
 
+            {/* Top Bar with Back and Guide Buttons */}
+            <div className="top-bar">
+                <div className="top-bar-left">
+                    <button 
+                        className="back-btn"
+                        onClick={() => navigate('/clients')}
+                        title="Back to Clients"
+                    >
+                        <i className="fas fa-arrow-left"></i>
+                        <span>Back to Clients</span>
+                    </button>
+                </div>
+                <div className="top-bar-actions">
+                    <button 
+                        className="guide-trigger-btn"
+                        onClick={startGuide}
+                        title="Start comprehensive guide"
+                    >
+                        <i className="fas fa-question-circle"></i>
+                        <span>Start Guide</span>
+                    </button>
+                </div>
+            </div>
+
             {/* HubSpot-style Form Content */}
             <div className="hubspot-content">
                 <form onSubmit={handleSubmit} className="hubspot-form">
@@ -450,20 +560,7 @@ const ClientCreation = () => {
                             </div>
                             
                             <div className="form-section">
-                                <div className="form-group">
-                                    <label htmlFor="clientType">Client Type</label>
-                                    <select 
-                                        id="clientType" 
-                                        name="clientType" 
-                                        value={formData.clientType}
-                                        onChange={handleInputChange}
-                                        required
-                                    >
-                                        <option value="regular">Regular Client</option>
-                                        <option value="seta">SETA Client</option>
-                                    </select>
-                                    <small>Select whether this is a regular client or a SETA (Sector Education and Training Authority) client</small>
-                                </div>
+
                                 
                                 <div className="form-row">
                                     <div className={`form-group ${formErrors.clientName ? 'error' : ''}`}>
@@ -639,19 +736,35 @@ const ClientCreation = () => {
                                         )}
                                     </div>
                                     <div className={`form-group ${formErrors.service ? 'error' : ''}`}>
-                                        <label htmlFor="service">Service Type</label>
-                                        <select 
-                                            id="service" 
-                                            name="service" 
-                                            value={formData.service}
-                                            onChange={handleInputChange}
-                                            required
-                                        >
-                                            <option value="" disabled>Select Service</option>
-                                            <option value="wsp">WSP</option>
-                                            <option value="hr">HR</option>
-                                            <option value="both">Both WSP & HR</option>
-                                        </select>
+                                        <label>Services *</label>
+                                        <div className="services-dropdown-container">
+                                            <div 
+                                                className="services-dropdown-trigger"
+                                                onClick={() => setShowServicesDropdown(!showServicesDropdown)}
+                                            >
+                                                <span className="services-placeholder">
+                                                    {formData.services && formData.services.length > 0 
+                                                        ? formData.services.join(', ') 
+                                                        : 'Select Services'
+                                                    }
+                                                </span>
+                                                <i className={`fas fa-chevron-down ${showServicesDropdown ? 'rotated' : ''}`}></i>
+                                            </div>
+                                            {showServicesDropdown && (
+                                                <div className="services-dropdown-options">
+                                                    {['BBBEE', 'Employment Equity', 'HR', 'WSP'].map((service) => (
+                                                        <label key={service} className="service-option">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={formData.services?.includes(service) || false}
+                                                                onChange={() => handleServiceRadioChange(service)}
+                                                            />
+                                                            <span className="option-label">{service}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
                                         {formErrors.service && (
                                             <div className="error-message">{formErrors.service}</div>
                                         )}
@@ -728,6 +841,7 @@ const ClientCreation = () => {
                                             name="qualificationLevel" 
                                             value={formData.qualificationLevel}
                                             onChange={handleInputChange}
+                                      
                                             required
                                         >
                                             <option value="" disabled>Select Level</option>
@@ -772,22 +886,7 @@ const ClientCreation = () => {
                                             <div className="error-message">{formErrors.retainer}</div>
                                         )}
                                     </div>
-                                    <div className={`form-group ${formErrors.costPerLearner ? 'error' : ''}`}>
-                                        <label htmlFor="costPerLearner">Cost per Learner (R)</label>
-                                        <input 
-                                            type="number" 
-                                            id="costPerLearner" 
-                                            name="costPerLearner" 
-                                            step="0.01" 
-                                            value={formData.costPerLearner}
-                                            onChange={handleInputChange}
-                                            placeholder="0.00"
-                                            required 
-                                        />
-                                        {formErrors.costPerLearner && (
-                                            <div className="error-message">{formErrors.costPerLearner}</div>
-                                        )}
-                                    </div>
+
                                 </div>
 
                                 <div className="section-header">
@@ -809,16 +908,7 @@ const ClientCreation = () => {
                                                         <option value="trench3">SLA</option>
                                                     </select>
                                                 </div>
-                                                <div className="form-group">
-                                                    <label>Number of Learners</label>
-                                                    <input 
-                                                        type="number" 
-                                                        value={service.rate}
-                                                        onChange={(e) => handleServiceChange(index, 'rate', e.target.value)}
-                                                        step="1"
-                                                        placeholder="0"
-                                                    />
-                                                </div>
+
                                                 {formData.services.length > 1 && (
                                                     <div className="form-group">
                                                         <button 
@@ -988,6 +1078,171 @@ const ClientCreation = () => {
             description="Create a new client record"
         >
             {pageContent}
+            <FormGuide
+                isActive={showGuide}
+                onComplete={handleGuideComplete}
+                onSkip={handleGuideSkip}
+                onTabChange={handleTabChange}
+                currentTab={activeTab}
+                steps={[
+                    {
+                        target: '.progress-indicator',
+                        title: 'Welcome to Client Creation',
+                        description: 'This progress bar shows your completion percentage. Let\'s start with the basic information section.',
+                        position: 'bottom'
+                    },
+
+                    {
+                        target: 'input[name="clientName"]',
+                        title: 'Company Name',
+                        description: 'Enter the official company name exactly as it appears on business registration documents. This is used for legal compliance and official records.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="clientReg"]',
+                        title: 'Registration Number',
+                        description: 'Enter the company registration number. This is crucial for legal compliance, tax purposes, and official documentation.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'textarea[name="clientAddress"]',
+                        title: 'Business Address',
+                        description: 'Provide the complete registered business address including street address, city, province, and postal code.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="contactPerson"]',
+                        title: 'Moving to Contact Details',
+                        description: 'Great! Basic information is complete. Now let\'s add the primary contact person details. I\'ll automatically switch to the Contact tab for you.',
+                        position: 'bottom',
+                        switchToTab: 'contact'
+                    },
+                    {
+                        target: 'input[name="contactPerson"]',
+                        title: 'Primary Contact',
+                        description: 'Enter the full name of the person who will be our main point of communication for all training matters.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="contactPosition"]',
+                        title: 'Contact Position',
+                        description: 'Enter their job title or position (e.g., HR Manager, Training Director, Operations Manager).',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="contactPhone"]',
+                        title: 'Phone Number',
+                        description: 'Enter their phone number. Include country code if international (e.g., +27 11 123 4567).',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="contactEmail"]',
+                        title: 'Email Address',
+                        description: 'Enter their email address. This will be used for all official communications, updates, and training materials.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'select[name="seta"]',
+                        title: 'Moving to Business Details',
+                        description: 'Excellent! Contact details are set. Now let\'s configure the business and training requirements. I\'ll automatically switch to the Business tab.',
+                        position: 'bottom',
+                        switchToTab: 'business'
+                    },
+                    {
+                        target: 'select[name="seta"]',
+                        title: 'SETA Selection',
+                        description: 'Select the appropriate SETA (Sector Education and Training Authority) that governs this client\'s industry and training requirements.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'select[name="service"]',
+                        title: 'Training Service',
+                        description: 'Choose the primary training service this client needs. This helps us tailor the program structure to their specific requirements.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="sdlNumber"]',
+                        title: 'SDL Number',
+                        description: 'Enter the Skills Development Levy (SDL) number. This is mandatory for SETA compliance and determines funding eligibility.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="moderator"]',
+                        title: 'Assigned Moderator',
+                        description: 'Enter the name of the moderator who will oversee, assess, and ensure quality standards for the training programs.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'select[name="qualificationType"]',
+                        title: 'Qualification Type',
+                        description: 'Select the type of qualification. This determines the training program structure, duration, and assessment methods.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'select[name="qualificationLevel"]',
+                        title: 'Qualification Level',
+                        description: 'Choose the specific qualification level. Available options will update based on your qualification type selection.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'input[name="retainer"]',
+                        title: 'Moving to Financial Information',
+                        description: 'Perfect! Business details are configured. Now let\'s set up the financial terms and pricing. I\'ll automatically switch to the Financial tab.',
+                        position: 'bottom',
+                        switchToTab: 'financial'
+                    },
+                    {
+                        target: 'input[name="retainer"]',
+                        title: 'Monthly Retainer',
+                        description: 'Enter the monthly retainer amount. This is the ongoing fee for our training services, support, and program management.',
+                        position: 'bottom'
+                    },
+
+                    {
+                        target: 'select[name="paymentTerms"]',
+                        title: 'Payment Terms',
+                        description: 'Select payment terms (e.g., 30 days). This determines when payments are due after invoicing.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: '.services-section',
+                        title: 'Additional Services',
+                        description: 'Here you can add additional training services. Each service can have different document types and learner counts.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'select[value="trench1"]',
+                        title: 'Document Type',
+                        description: 'Select the type of document for this service: Award Letter, SETA Contract, or SLA (Service Level Agreement).',
+                        position: 'bottom'
+                    },
+
+                    {
+                        target: '.add-service-btn',
+                        title: 'Add More Services',
+                        description: 'Click "Upload attachment" to add additional services with different document types and learner counts.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: '.attachments-list',
+                        title: 'Document Attachments',
+                        description: 'Here you can see uploaded documents. You can remove attachments by clicking the X button.',
+                        position: 'bottom'
+                    },
+                    {
+                        target: 'button[type="submit"]',
+                        title: 'Create Client',
+                        description: 'Excellent! All sections are complete. Click "Create Client" to save this client record to your system.',
+                        position: 'top'
+                    },
+                    {
+                        target: '.btn-secondary',
+                        title: 'Preview SLA',
+                        description: 'Alternatively, you can preview the Service Level Agreement (SLA) to review all terms before creating the client.',
+                        position: 'top'
+                    }
+                ]}
+            />
         </HubSpotLayout>
     );
 };

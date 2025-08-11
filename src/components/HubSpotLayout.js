@@ -33,7 +33,7 @@ const HubSpotLayout = ({ children, title, description, showActions = true, actio
             '/client-creation': 'Client Creation',
             '/contract-creation': 'Contract Creation',
             '/accreditation': 'Accreditation',
-            '/wsp-training': 'WSP & Training'
+            '/wsp-training': 'Project Management'
         };
         return pageMap[path] || 'Page';
     };
@@ -59,28 +59,22 @@ const HubSpotLayout = ({ children, title, description, showActions = true, actio
             description: 'Client management'
         },
         { 
+            path: '/wsp-training', 
+            icon: 'fas fa-project-diagram', 
+            label: 'Project Management',
+            description: 'Manage projects and training programs'
+        },
+        { 
             path: '/accreditation', 
             icon: 'fas fa-certificate', 
             label: 'Accreditation',
             description: 'Manage accreditations'
         },
         { 
-            path: '/wsp-training', 
-            icon: 'fas fa-chalkboard-teacher', 
-            label: 'WSP & Training',
-            description: 'Training programs'
-        },
-        { 
             path: '/facilitator', 
             icon: 'fas fa-users-cog', 
             label: 'Facilitator Log Book',
             description: 'Facilitator log book'
-        },
-        { 
-            path: '/timetable', 
-            icon: 'fas fa-calendar-alt', 
-            label: 'Timetable',
-            description: 'Professional timetable and bookings'
         },
         { 
             path: '/help', 

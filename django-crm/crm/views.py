@@ -77,6 +77,90 @@ class LeadViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    @action(detail=True, methods=['post'])
+    def convert_to_client(self, request, pk=None):
+        """Convert lead to client with comprehensive data preservation"""
+        lead = self.get_object()
+        
+        try:
+            # Create client from lead with all available data
+            client = Client.objects.create(
+                # Basic Information
+                client_name=lead.company_name,
+                client_reg=request.data.get('client_reg', f'CONV-{lead.id}'),
+                client_address=request.data.get('client_address', ''),
+                
+                # Contact Information
+                contact_person=lead.contact_person,
+                contact_position=lead.contact_position,
+                contact_phone=lead.contact_phone,
+                contact_email=lead.contact_email,
+                
+                # SETA and Service Information
+                seta=lead.seta or request.data.get('seta', 'wrseta'),
+                service=lead.service_interest or request.data.get('service', 'wsp'),
+                sdl_number=request.data.get('sdl_number', ''),
+                moderator=request.data.get('moderator', ''),
+                
+                # Financial Information
+                retainer=request.data.get('monthly_retainer', 
+                    float(lead.estimated_value) / 12 if lead.estimated_value else 0),
+                payment_terms=request.data.get('payment_terms', '30'),
+                
+                # Qualification Details
+                qualification_type=request.data.get('qualification_type', 'employed_learnership'),
+                qualification_level=request.data.get('qualification_level', 'nqf5'),
+                cost_per_learner=request.data.get('cost_per_learner', 
+                    float(lead.estimated_value) / 12 if lead.estimated_value else 0),
+                
+                # Status and metadata
+                status='active',
+                notes=f"Converted from lead: {lead.company_name} (ID: {lead.id})\n{lead.notes or ''}",
+                
+                # Preserve lead source and additional data
+                created_by=request.user if request.user.is_authenticated else None
+            )
+            
+            # Update lead status to converted and link to client
+            lead.status = 'converted'
+            lead.converted_at = timezone.now()
+            lead.save()
+            
+            # Create client services if provided
+            services_data = request.data.get('services', [])
+            for service_data in services_data:
+                ClientService.objects.create(
+                    client=client,
+                    service_type=service_data.get('type', 'trench1'),
+                    rate=service_data.get('rate', 0),
+                    recurring=service_data.get('recurring', False)
+                )
+            
+            return Response({
+                'message': 'Lead converted to client successfully with all data preserved!',
+                'lead_id': lead.id,
+                'client_id': client.id,
+                'client_name': client.client_name,
+                'preserved_data': {
+                    'company_name': lead.company_name,
+                    'contact_person': lead.contact_person,
+                    'contact_email': lead.contact_email,
+                    'contact_phone': lead.contact_phone,
+                    'contact_position': lead.contact_position,
+                    'seta': lead.seta,
+                    'service_interest': lead.service_interest,
+                    'estimated_value': lead.estimated_value,
+                    'source': lead.source,
+                    'notes': lead.notes,
+                    'services_count': len(services_data)
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response({
+                'error': f'Error converting lead to client: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
     @action(detail=False, methods=['get'])
     def statistics(self, request):
         """Get lead statistics for dashboard"""
@@ -193,10 +277,24 @@ class DashboardViewSet(viewsets.ViewSet):
         converted_leads = Lead.objects.filter(status='converted').count()
         conversion_rate = (converted_leads / total_leads * 100) if total_leads > 0 else 0
         
-        # Total value
-        total_value = Quotation.objects.aggregate(
+        # Active clients count (only active clients)
+        active_clients = Client.objects.filter(
+            Q(status='active') | Q(status='converted') | Q(status__isnull=True)
+        ).count()
+        
+        # Total value from active clients only
+        total_value = Client.objects.filter(
+            Q(status='active') | Q(status='converted') | Q(status__isnull=True)
+        ).aggregate(
+            total=Sum('retainer')
+        )['total'] or 0
+        
+        # Add quotation values for converted leads
+        quotation_value = Quotation.objects.aggregate(
             total=Sum('total_value')
         )['total'] or 0
+        
+        total_value += quotation_value
         
         # Format total value as R 2.5M format
         if total_value >= 1000000:
@@ -206,10 +304,11 @@ class DashboardViewSet(viewsets.ViewSet):
         
         return Response({
             'leads': total_leads,
-            'active_leads': active_leads,
+            'active_leads': active_clients + converted_leads,  # Include both active clients and converted leads
             'conversion_rate': round(conversion_rate, 1),
             'total_value': formatted_value,
-            'raw_total_value': total_value
+            'raw_total_value': total_value,
+            'active_clients_count': active_clients
         })
     
     @action(detail=False, methods=['get'])

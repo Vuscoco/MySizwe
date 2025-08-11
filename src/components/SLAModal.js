@@ -11,15 +11,18 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
 
     useEffect(() => {
         if (clientData) {
-            // Convert the client data format to match the SETA funded client creation form structure
+            // Convert the client data format to match the redacted form structure
             const convertedData = {
                 id: clientData.id,
-                clientType: clientData.clientType || 'regular',
                 clientName: clientData.clientName || '',
                 clientReg: clientData.clientReg || '',
                 clientAddress: clientData.clientAddress || '',
+                province: clientData.province || '',
+                country: clientData.country || '',
+                leadManager: clientData.leadManager || clientData.contactPerson || '',
+                companyContact: clientData.companyContact || '',
+                conceptionDate: clientData.conceptionDate || new Date().toISOString().split('T')[0],
                 contactPerson: clientData.contactPerson || '',
-                contactPosition: clientData.contactPosition || '',
                 contactPhone: clientData.contactPhone || '',
                 contactEmail: clientData.contactEmail || '',
                 seta: clientData.seta || '',
@@ -30,14 +33,12 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                 paymentTerms: clientData.paymentTerms ? clientData.paymentTerms.replace(' Days', '') : '30',
                 qualificationType: clientData.qualificationType || '',
                 qualificationLevel: clientData.qualificationLevel || '',
-                costPerLearner: clientData.costPerLearner || '',
-                services: clientData.services || [{ type: 'trench1', rate: '', recurring: false }],
-                // Additional fields that correlate with SETA funded form
+                services: clientData.services || [],
                 totalValue: clientData.totalValue || 0,
-                lastContact: clientData.lastContact || '',
-                nextFollowUp: clientData.nextFollowUp || '',
                 status: clientData.status || 'Active',
-                createdAt: clientData.createdAt || ''
+                createdAt: clientData.createdAt || new Date().toISOString(),
+                lastContact: clientData.lastContact || '',
+                nextFollowUp: clientData.nextFollowUp || ''
             };
             setFormData(convertedData);
             if (convertedData.qualificationType) {
@@ -53,10 +54,10 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
     // Calculate form completion progress
     useEffect(() => {
         const requiredFields = {
-            basic: ['clientName', 'clientReg', 'clientAddress'],
-            contact: ['contactPerson', 'contactPosition', 'contactPhone', 'contactEmail'],
-            business: ['seta', 'service', 'sdlNumber', 'moderator', 'qualificationType', 'qualificationLevel'],
-            financial: ['retainer', 'costPerLearner']
+            basic: ['clientName', 'clientReg', 'leadManager', 'companyContact', 'conceptionDate'],
+            contact: ['clientAddress', 'contactPhone', 'province', 'country', 'contactEmail'],
+            business: ['seta', 'sdlNumber'],
+            financial: ['retainer']
         };
 
         let completedFields = 0;
@@ -147,7 +148,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
     const addService = () => {
         setFormData(prev => ({
             ...prev,
-            services: [...prev.services, { type: 'trench1', rate: '', recurring: false }]
+            services: [...prev.services, { type: 'trench1', recurring: false }]
         }));
     };
 
@@ -211,7 +212,6 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                 ...formData,
                 monthlyRetainer: parseFloat(formData.retainer) || 0,
                 paymentTerms: `${formData.paymentTerms} Days`,
-                costPerLearner: parseFloat(formData.costPerLearner) || 0,
                 totalValue: (parseFloat(formData.retainer) || 0) * 12,
                 lastContact: formData.lastContact || new Date().toISOString().split('T')[0],
                 nextFollowUp: formData.nextFollowUp || new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -244,16 +244,19 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
     const handleCancel = () => {
         if (isEditing) {
             setIsEditing(false);
-            // Reset to original data, correlating with SETA funded form structure
+            // Reset to original data, correlating with redacted form structure
             if (clientData) {
                 const convertedData = {
                     id: clientData.id,
-                    clientType: clientData.clientType || 'regular',
                     clientName: clientData.clientName || '',
                     clientReg: clientData.clientReg || '',
                     clientAddress: clientData.clientAddress || '',
+                    province: clientData.province || '',
+                    country: clientData.country || '',
+                    leadManager: clientData.leadManager || clientData.contactPerson || '',
+                    companyContact: clientData.companyContact || '',
+                    conceptionDate: clientData.conceptionDate || new Date().toISOString().split('T')[0],
                     contactPerson: clientData.contactPerson || '',
-                    contactPosition: clientData.contactPosition || '',
                     contactPhone: clientData.contactPhone || '',
                     contactEmail: clientData.contactEmail || '',
                     seta: clientData.seta || '',
@@ -264,14 +267,12 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                     paymentTerms: clientData.paymentTerms ? clientData.paymentTerms.replace(' Days', '') : '30',
                     qualificationType: clientData.qualificationType || '',
                     qualificationLevel: clientData.qualificationLevel || '',
-                    costPerLearner: clientData.costPerLearner || '',
-                    services: clientData.services || [{ type: 'trench1', rate: '', recurring: false }],
-                    // Additional fields that correlate with SETA funded form
+                    services: clientData.services || [],
                     totalValue: clientData.totalValue || 0,
-                    lastContact: clientData.lastContact || '',
-                    nextFollowUp: clientData.nextFollowUp || '',
                     status: clientData.status || 'Active',
-                    createdAt: clientData.createdAt || ''
+                    createdAt: clientData.createdAt || new Date().toISOString(),
+                    lastContact: clientData.lastContact || '',
+                    nextFollowUp: clientData.nextFollowUp || ''
                 };
                 setFormData(convertedData);
             }
@@ -282,10 +283,10 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
 
     const getTabStatus = (tabName) => {
         const requiredFields = {
-            basic: ['clientName', 'clientReg', 'clientAddress'],
-            contact: ['contactPerson', 'contactPosition', 'contactPhone', 'contactEmail'],
-            business: ['seta', 'service', 'sdlNumber', 'moderator', 'qualificationType', 'qualificationLevel'],
-            financial: ['retainer', 'costPerLearner']
+            basic: ['clientName', 'clientReg', 'leadManager', 'companyContact', 'conceptionDate'],
+            contact: ['clientAddress', 'contactPhone', 'province', 'country', 'contactEmail'],
+            business: ['seta', 'sdlNumber'],
+            financial: ['retainer']
         };
 
         const fields = requiredFields[tabName] || [];
@@ -342,30 +343,11 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                     {activeTab === 'basic' && (
                         <div className="tab-content">
                             <div className="section-header">
-                                <h2>Basic Information</h2>
+                                <h2>Company Information</h2>
                                 <p>Enter the fundamental details about this client organization</p>
                             </div>
                             
                             <div className="form-section">
-                                <div className="form-group">
-                                    <label htmlFor="clientType">Client Type</label>
-                                    {isEditing ? (
-                                        <select 
-                                            id="clientType" 
-                                            name="clientType" 
-                                            value={formData.clientType}
-                                            onChange={handleInputChange}
-                                            required
-                                        >
-                                            <option value="regular">Regular Client</option>
-                                            <option value="seta">SETA Client</option>
-                                        </select>
-                                    ) : (
-                                        <span className="sla-value">{formData.clientType === 'seta' ? 'SETA Client' : 'Regular Client'}</span>
-                                    )}
-                                    <small>Select whether this is a regular client or a SETA (Sector Education and Training Authority) client</small>
-                                </div>
-                                
                                 <div className="form-row">
                                     <div className="form-group">
                                         <label htmlFor="clientName">Company Name</label>
@@ -381,6 +363,41 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                             />
                                         ) : (
                                             <span className="sla-value">{formData.clientName || 'N/A'}</span>
+                                        )}
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="leadManager">Project Manager</label>
+                                        {isEditing ? (
+                                            <input 
+                                                type="text" 
+                                                id="leadManager" 
+                                                name="leadManager" 
+                                                value={formData.leadManager}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter project manager name"
+                                                required 
+                                            />
+                                        ) : (
+                                            <span className="sla-value">{formData.leadManager || 'N/A'}</span>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="companyContact">Company Contact</label>
+                                        {isEditing ? (
+                                            <input 
+                                                type="text" 
+                                                id="companyContact" 
+                                                name="companyContact" 
+                                                value={formData.companyContact}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter company contact"
+                                                required 
+                                            />
+                                        ) : (
+                                            <span className="sla-value">{formData.companyContact || 'N/A'}</span>
                                         )}
                                     </div>
                                     <div className="form-group">
@@ -401,21 +418,22 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                     </div>
                                 </div>
                                 
-                                <div className="form-group">
-                                    <label htmlFor="clientAddress">Registered Address</label>
-                                    {isEditing ? (
-                                        <textarea 
-                                            id="clientAddress" 
-                                            name="clientAddress" 
-                                            value={formData.clientAddress}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter the complete registered business address"
-                                            rows="3"
-                                            required 
-                                        ></textarea>
-                                    ) : (
-                                        <span className="sla-value">{formData.clientAddress || 'N/A'}</span>
-                                    )}
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="conceptionDate">Conception Date</label>
+                                        {isEditing ? (
+                                            <input 
+                                                type="date" 
+                                                id="conceptionDate" 
+                                                name="conceptionDate" 
+                                                value={formData.conceptionDate}
+                                                onChange={handleInputChange}
+                                                required 
+                                            />
+                                        ) : (
+                                            <span className="sla-value">{formData.conceptionDate ? new Date(formData.conceptionDate).toLocaleDateString('en-ZA') : 'N/A'}</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -432,40 +450,21 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                             <div className="form-section">
                                 <div className="form-row">
                                     <div className="form-group">
-                                        <label htmlFor="contactPerson">Contact Person</label>
+                                        <label htmlFor="clientAddress">Business Address</label>
                                         {isEditing ? (
-                                            <input 
-                                                type="text" 
-                                                id="contactPerson" 
-                                                name="contactPerson" 
-                                                value={formData.contactPerson}
+                                            <textarea 
+                                                id="clientAddress" 
+                                                name="clientAddress" 
+                                                value={formData.clientAddress}
                                                 onChange={handleInputChange}
-                                                placeholder="Enter the primary contact person's name"
+                                                placeholder="Enter the complete business address"
+                                                rows="3"
                                                 required 
-                                            />
+                                            ></textarea>
                                         ) : (
-                                            <span className="sla-value">{formData.contactPerson || 'N/A'}</span>
+                                            <span className="sla-value">{formData.clientAddress || 'N/A'}</span>
                                         )}
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="contactPosition">Position</label>
-                                        {isEditing ? (
-                                            <input 
-                                                type="text" 
-                                                id="contactPosition" 
-                                                name="contactPosition" 
-                                                value={formData.contactPosition}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter their job title or position"
-                                                required 
-                                            />
-                                        ) : (
-                                            <span className="sla-value">{formData.contactPosition || 'N/A'}</span>
-                                        )}
-                                    </div>
-                                </div>
-                                
-                                <div className="form-row">
                                     <div className="form-group">
                                         <label htmlFor="contactPhone">Phone Number</label>
                                         {isEditing ? (
@@ -482,6 +481,44 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                             <span className="sla-value">{formData.contactPhone || 'N/A'}</span>
                                         )}
                                     </div>
+                                </div>
+                                
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label htmlFor="province">Province/State</label>
+                                        {isEditing ? (
+                                            <input 
+                                                type="text" 
+                                                id="province" 
+                                                name="province" 
+                                                value={formData.province}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter province or state"
+                                                required 
+                                            />
+                                        ) : (
+                                            <span className="sla-value">{formData.province || 'N/A'}</span>
+                                        )}
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="country">Country</label>
+                                        {isEditing ? (
+                                            <input 
+                                                type="text" 
+                                                id="country" 
+                                                name="country" 
+                                                value={formData.country}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter country"
+                                                required 
+                                            />
+                                        ) : (
+                                            <span className="sla-value">{formData.country || 'N/A'}</span>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="form-row">
                                     <div className="form-group">
                                         <label htmlFor="contactEmail">Email Address</label>
                                         {isEditing ? (
@@ -507,7 +544,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                     {activeTab === 'business' && (
                         <div className="tab-content">
                             <div className="section-header">
-                                <h2>Business Details</h2>
+                                <h2>Services & SETA</h2>
                                 <p>SETA and service information for this client</p>
                             </div>
                             
@@ -547,25 +584,6 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                             <span className="sla-value">{formData.seta || 'N/A'}</span>
                                         )}
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="service">Service Type</label>
-                                        {isEditing ? (
-                                            <select 
-                                                id="service" 
-                                                name="service" 
-                                                value={formData.service}
-                                                onChange={handleInputChange}
-                                                required
-                                            >
-                                                <option value="" disabled>Select Service</option>
-                                                <option value="wsp">WSP</option>
-                                                <option value="hr">HR</option>
-                                                <option value="both">Both WSP & HR</option>
-                                            </select>
-                                        ) : (
-                                            <span className="sla-value">{formData.service || 'N/A'}</span>
-                                        )}
-                                    </div>
                                 </div>
                                 
                                 <div className="form-row">
@@ -585,76 +603,6 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                             <span className="sla-value">{formData.sdlNumber || 'N/A'}</span>
                                         )}
                                     </div>
-                                    <div className="form-group">
-                                        <label htmlFor="moderator">Project Manager</label>
-                                        {isEditing ? (
-                                            <input 
-                                                type="text" 
-                                                id="moderator" 
-                                                name="moderator" 
-                                                value={formData.moderator}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter project manager name"
-                                                required 
-                                            />
-                                        ) : (
-                                            <span className="sla-value">{formData.moderator || 'N/A'}</span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <div className="section-header">
-                                    <h3>Qualification Details</h3>
-                                </div>
-                                
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label htmlFor="qualificationType">Qualification Type</label>
-                                        {isEditing ? (
-                                            <select 
-                                                id="qualificationType" 
-                                                name="qualificationType" 
-                                                value={formData.qualificationType}
-                                                onChange={handleInputChange}
-                                                required
-                                            >
-                                                <option value="" disabled>Select Qualification</option>
-                                                <option value="diploma">Diploma (Graduate)</option>
-                                                <option value="degree">Degree (Graduate)</option>
-                                                <option value="ncv">NC(Vocational)</option>
-                                                <option value="tvet_18_1">Learnership Programme (18.1)</option>
-                                                <option value="tvet_18_2">Learnership Programme (18.2)</option>
-                                                <option value="skills_18_1">Skills Programme (18.1)</option>
-                                                <option value="skills_18_2">Skills Programme (18.2)</option>
-                                                <option value="oc_18_1">Occupational Certificate (18.1)</option>
-                                                <option value="oc_18_2">Occupational Certificate (18.2)</option>
-                                                <option value="bursary">Bursary</option>
-                                            </select>
-                                        ) : (
-                                            <span className="sla-value">{formData.qualificationType || 'N/A'}</span>
-                                        )}
-                                    </div>
-                                    <div className="form-group">
-                                        <label htmlFor="qualificationLevel">Qualification Level</label>
-                                        {isEditing ? (
-                                            <select 
-                                                id="qualificationLevel" 
-                                                name="qualificationLevel" 
-                                                value={formData.qualificationLevel}
-                                                onChange={handleInputChange}
-                                                required
-                                            >
-                                                <option value="" disabled>Select Level</option>
-                                                {qualificationLevels.map((level, index) => (
-                                                    <option key={index} value={level.value}>
-                                                        {level.text}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        ) : (
-                                            <span className="sla-value">{formData.qualificationLevel || 'N/A'}</span>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -664,7 +612,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                     {activeTab === 'financial' && (
                         <div className="tab-content">
                             <div className="section-header">
-                                <h2>Financial Information</h2>
+                                <h2>Business Details</h2>
                                 <p>Pricing and payment details for this client</p>
                             </div>
                             
@@ -687,123 +635,28 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                                             <span className="sla-value">R {formData.retainer || '0.00'}</span>
                                         )}
                                     </div>
+                                </div>
+
+                                <div className="form-row">
                                     <div className="form-group">
-                                        <label htmlFor="costPerLearner">Cost per Learner (R)</label>
-                                        {isEditing ? (
-                                            <input 
-                                                type="number" 
-                                                id="costPerLearner" 
-                                                name="costPerLearner" 
-                                                step="0.01" 
-                                                value={formData.costPerLearner}
-                                                onChange={handleInputChange}
-                                                placeholder="0.00"
-                                                required 
-                                            />
-                                        ) : (
-                                            <span className="sla-value">R {formData.costPerLearner || '0.00'}</span>
-                                        )}
+                                        <label>Total Annual Value (R)</label>
+                                        <span className="sla-value">R {((parseFloat(formData.retainer) || 0) * 12).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Status</label>
+                                        <span className="sla-value">{formData.status || 'Active'}</span>
                                     </div>
                                 </div>
 
-                                <div className="section-header">
-                                    <h3>Additional Services</h3>
-                                </div>
-                                
-                                <div className="services-section">
-                                    {formData.services && formData.services.map((service, index) => (
-                                        <div key={index} className="service-item">
-                                            <div className="form-row">
-                                                <div className="form-group">
-                                                    <label>Document Type</label>
-                                                    {isEditing ? (
-                                                        <select 
-                                                            value={service.type}
-                                                            onChange={(e) => handleServiceChange(index, 'type', e.target.value)}
-                                                        >
-                                                            <option value="trench1">Award Letter</option>
-                                                            <option value="trench2">Seta Contract</option>
-                                                            <option value="trench3">SLA</option>
-                                                        </select>
-                                                    ) : (
-                                                        <span className="sla-value">{service.type}</span>
-                                                    )}
-                                                </div>
-                                                <div className="form-group">
-                                                    <label>Number of Learners</label>
-                                                    {isEditing ? (
-                                                        <input 
-                                                            type="number" 
-                                                            value={service.rate}
-                                                            onChange={(e) => handleServiceChange(index, 'rate', e.target.value)}
-                                                            step="1"
-                                                            placeholder="0"
-                                                        />
-                                                    ) : (
-                                                        <span className="sla-value">{service.rate || '0'}</span>
-                                                    )}
-                                                </div>
-                                                {isEditing && formData.services.length > 1 && (
-                                                    <div className="form-group">
-                                                        <button 
-                                                            type="button" 
-                                                            className="remove-service-btn" 
-                                                            onClick={() => removeService(index)}
-                                                        >
-                                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                                <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    
-                                    {isEditing && (
-                                        <button type="button" className="add-service-btn" onClick={handleFileSelect}>
-                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                <path d="M8 1L8 15M1 8L15 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                            </svg>
-                                            Upload attachment
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Attachments Section */}
-                                <div className="form-section">
-                                    {attachments.length > 0 && (
-                                        <div className="attachments-list">
-                                            {attachments
-                                                .filter(attachment => attachment.documentType === getDocumentType())
-                                                .map((attachment) => (
-                                                <div key={attachment.id} className="attachment-item">
-                                                    <div className="attachment-info">
-                                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                                            <path d="M8 1L15 8L8 15M1 8H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                                        </svg>
-                                                        <span className="attachment-name">{attachment.name}</span>
-                                                        <span className="attachment-type">({attachment.documentType})</span>
-                                                        <span className="attachment-size">
-                                                            ({(attachment.size / 1024 / 1024).toFixed(2)} MB)
-                                                        </span>
-                                                    </div>
-                                                    {isEditing && (
-                                                        <button 
-                                                            type="button" 
-                                                            className="remove-attachment-btn" 
-                                                            onClick={() => removeAttachment(attachment.id)}
-                                                            title="Remove attachment"
-                                                        >
-                                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                                                <path d="M3 3L9 9M9 3L3 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                                            </svg>
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Created Date</label>
+                                        <span className="sla-value">{formData.createdAt ? new Date(formData.createdAt).toLocaleDateString('en-ZA') : new Date().toLocaleDateString('en-ZA')}</span>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Last Contact</label>
+                                        <span className="sla-value">{formData.lastContact || 'N/A'}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -820,7 +673,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M8 8C10.21 8 12 6.21 12 4C12 1.79 10.21 0 8 0C5.79 0 4 1.79 4 4C4 6.21 5.79 8 8 8ZM8 10C5.33 10 0 11.34 0 14V16H16V14C16 11.34 10.67 10 8 10Z" fill="currentColor"/>
                             </svg>
-                            Basic Information
+                            Company Information
                             {getTabStatus('basic') === 'completed' && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '8px' }}>
                                     <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#10b981"/>
@@ -834,7 +687,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M14 2H2C1.45 2 1 2.45 1 3V13C1 13.55 1.45 14 2 14H14C14.55 14 15 13.55 15 13V3C15 2.45 14.55 2 14 2ZM14 4L8 8.5L2 4V3L8 7.5L14 3V4Z" fill="currentColor"/>
                             </svg>
-                            Contact Details
+                            Contact Information
                             {getTabStatus('contact') === 'completed' && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '8px' }}>
                                     <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#10b981"/>
@@ -848,7 +701,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M12 2H4C2.9 2 2 2.9 2 4V12C2 13.1 2.9 14 4 14H12C13.1 14 14 13.1 14 12V4C14 2.9 13.1 2 12 2ZM12 12H4V4H12V12Z" fill="currentColor"/>
                             </svg>
-                            Business Details
+                            Services & SETA
                             {getTabStatus('business') === 'completed' && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '8px' }}>
                                     <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#10b981"/>
@@ -862,7 +715,7 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M8 0C3.58 0 0 3.58 0 8C0 12.42 3.58 16 8 16C12.42 16 16 12.42 16 8C16 3.58 12.42 0 8 0ZM8 14C4.69 14 2 11.31 2 8C2 4.69 4.69 2 8 2C11.31 2 14 4.69 14 8C14 11.31 11.31 14 8 14ZM7 4H9V8H13V10H9V14H7V10H3V8H7V4Z" fill="currentColor"/>
                             </svg>
-                            Financial Information
+                            Business Details
                             {getTabStatus('financial') === 'completed' && (
                                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: '8px' }}>
                                     <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" fill="#10b981"/>
@@ -874,20 +727,17 @@ const SLAModal = ({ isOpen, onClose, clientData, mode = 'view', onSave, onDelete
 
                 <div className="sla-modal-footer">
                     {isEditing ? (
-                        <div className="footer-actions">
-                            <button className="btn-secondary" onClick={handleCancel}>
-                                <i className="fas fa-times"></i>
+                        <div className="modal-actions">
+                            <button type="button" className="btn secondary" onClick={handleCancel}>
                                 Cancel
                             </button>
-                            <button className="btn-primary" onClick={handleSave}>
-                                <i className="fas fa-save"></i>
+                            <button type="button" className="btn primary" onClick={handleSave}>
                                 Save Changes
                             </button>
                         </div>
                     ) : (
-                        <div className="footer-actions">
-                            <button className="btn-secondary" onClick={onClose}>
-                                <i className="fas fa-times"></i>
+                        <div className="modal-actions">
+                            <button type="button" className="btn secondary" onClick={onClose}>
                                 Close
                             </button>
                         </div>

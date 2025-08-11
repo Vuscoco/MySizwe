@@ -1,6 +1,6 @@
-/* Reports Page - Professional & Modern Design */
+/* Reports Page - Professional & Modern Design - Consolidated */
 
-/* Main Container */
+/* ===== MAIN CONTAINER ===== */
 .reports-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -9,7 +9,7 @@
     min-height: calc(100vh - 80px);
 }
 
-/* Layout */
+/* ===== LAYOUT ===== */
 .reports-layout {
     display: grid;
     grid-template-columns: 320px 1fr;
@@ -17,7 +17,7 @@
     height: 100%;
 }
 
-/* Sidebar */
+/* ===== SIDEBAR ===== */
 .reports-sidebar {
     background: white;
     border-radius: 16px;
@@ -108,7 +108,7 @@
     flex-shrink: 0;
 }
 
-/* Main Content */
+/* ===== MAIN CONTENT ===== */
 .reports-main {
     background: white;
     border-radius: 16px;
@@ -118,14 +118,14 @@
     min-height: 600px;
 }
 
-/* Dashboard Overview */
+/* ===== DASHBOARD OVERVIEW ===== */
 .dashboard-overview {
     display: flex;
     flex-direction: column;
     gap: 32px;
 }
 
-/* Stats Header */
+/* ===== STATS HEADER ===== */
 .stats-header {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -233,7 +233,7 @@
     color: #6b7280;
 }
 
-/* Performance Section */
+/* ===== PERFORMANCE SECTION ===== */
 .performance-section {
     background: white;
     border-radius: 16px;
@@ -335,7 +335,7 @@
     color: #991b1b;
 }
 
-/* Activity Section */
+/* ===== ACTIVITY SECTION ===== */
 .activity-section {
     background: white;
     border-radius: 16px;
@@ -422,7 +422,7 @@
     font-weight: 500;
 }
 
-/* Leads Analysis */
+/* ===== LEADS ANALYSIS ===== */
 .leads-analysis {
     display: flex;
     flex-direction: column;
@@ -593,7 +593,7 @@
     text-align: right;
 }
 
-/* Leads Table */
+/* ===== LEADS TABLE ===== */
 .leads-table {
     background: white;
     border-radius: 16px;
@@ -736,7 +736,7 @@
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Client Performance */
+/* ===== CLIENT PERFORMANCE ===== */
 .client-performance {
     display: flex;
     flex-direction: column;
@@ -975,7 +975,7 @@
     color: #166534;
 }
 
-/* Financial Reports */
+/* ===== FINANCIAL REPORTS ===== */
 .financial-reports {
     display: flex;
     flex-direction: column;
@@ -1073,7 +1073,7 @@
     color: #ef4444;
 }
 
-/* Coming Soon */
+/* ===== COMING SOON ===== */
 .coming-soon {
     text-align: center;
     padding: 80px 40px;
@@ -1138,7 +1138,198 @@
     color: #374151;
 }
 
-/* Responsive Design */
+/* ===== LEGACY STYLES FROM PAGES/REPORTS.CSS ===== */
+/* Reports page specific styles - keeping for backward compatibility */
+.reports-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reports-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.reports-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.report-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e1e8ed;
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.report-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e8ed;
+    background: #f8f9fa;
+}
+
+.report-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.report-description {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.report-content {
+    padding: 1.5rem;
+}
+
+.report-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.report-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.report-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.report-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.report-btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.report-btn.secondary {
+    background: #f8f9fa;
+    color: #2c3e50;
+    border: 1px solid #e1e8ed;
+}
+
+.report-btn.secondary:hover {
+    background: #e9ecef;
+}
+
+.filters-section {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #e1e8ed;
+}
+
+.filters-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.filter-input {
+    padding: 0.75rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.filter-select {
+    padding: 0.75rem;
+    border: 1px solid #e1e8ed;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.apply-filters {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+}
+
+.apply-filters:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1200px) {
     .reports-layout {
         grid-template-columns: 1fr;
@@ -1215,5 +1406,22 @@
         flex-direction: column;
         gap: 16px;
         align-items: flex-start;
+    }
+    
+    /* Legacy responsive styles */
+    .reports-title {
+        font-size: 2rem;
+    }
+    
+    .report-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .report-actions {
+        flex-direction: column;
     }
 } 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import HubSpotLayout from '../components/HubSpotLayout';
-import './SLAPreview.css';
+import '../css/SLAPreview.css';
 
 const SLAPreview = () => {
     const navigate = useNavigate();

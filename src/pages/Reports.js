@@ -1,10 +1,36 @@
 import React, { useState } from 'react';
 import HubSpotLayout from '../components/HubSpotLayout';
-import './Reports.css';
+import '../css/Reports.css';
 
 const Reports = () => {
     const [selectedReport, setSelectedReport] = useState('overview');
     const [dateRange, setDateRange] = useState('month');
+
+    // Function to get active clients count
+    const getActiveClientsCount = () => {
+        const clientsData = JSON.parse(localStorage.getItem('clientsData') || '[]');
+        const activeClients = clientsData.filter(client => {
+            const status = (client.status || '').toLowerCase();
+            return status === 'active' || status === 'converted' || !status;
+        });
+        return activeClients.length;
+    };
+
+    // Function to get total revenue from active clients
+    const getActiveClientsRevenue = () => {
+        const clientsData = JSON.parse(localStorage.getItem('clientsData') || '[]');
+        const activeClients = clientsData.filter(client => {
+            const status = (client.status || '').toLowerCase();
+            return status === 'active' || status === 'converted' || !status;
+        });
+        return activeClients.reduce((sum, client) => sum + (parseFloat(client.totalValue) || 0), 0);
+    };
+
+    // Function to get new leads count
+    const getNewLeadsCount = () => {
+        const leadsData = JSON.parse(localStorage.getItem('leadsData') || '[]');
+        return leadsData.filter(lead => lead.status === 'new' || lead.status === 'pending').length;
+    };
 
     const reports = [
         { id: 'overview', name: 'Overview Dashboard', icon: 'fas fa-chart-pie', color: '#10b981' },
@@ -25,7 +51,7 @@ const Reports = () => {
                     </div>
                     <div className="stat-content">
                         <h3>Total Revenue</h3>
-                        <div className="stat-value">R 2,450,000</div>
+                        <div className="stat-value">R {getActiveClientsRevenue().toLocaleString()}</div>
                         <div className="stat-change positive">
                             <i className="fas fa-arrow-up"></i>
                             <span>+18.5% vs last month</span>
@@ -38,7 +64,7 @@ const Reports = () => {
                     </div>
                     <div className="stat-content">
                         <h3>Active Clients</h3>
-                        <div className="stat-value">89</div>
+                        <div className="stat-value">{getActiveClientsCount()}</div>
                         <div className="stat-change positive">
                             <i className="fas fa-arrow-up"></i>
                             <span>+12 this month</span>
@@ -51,7 +77,7 @@ const Reports = () => {
                     </div>
                     <div className="stat-content">
                         <h3>New Leads</h3>
-                        <div className="stat-value">247</div>
+                        <div className="stat-value">{getNewLeadsCount()}</div>
                         <div className="stat-change positive">
                             <i className="fas fa-arrow-up"></i>
                             <span>+23 this month</span>

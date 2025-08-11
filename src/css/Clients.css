@@ -283,15 +283,7 @@
     color: #006400;
 }
 
-.converted-badge {
-    background: #006400;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-    font-weight: 600;
-}
+
 
 /* Action Buttons */
 .action-buttons {
@@ -351,6 +343,35 @@
     gap: 12px;
 }
 
+
+
+/* Services Checkboxes */
+.services-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #dc3545;
+}
+
+.checkbox-label span {
+    font-weight: 500;
+}
+
 .modules-title {
     font-size: 20px;
     font-weight: 600;
@@ -372,6 +393,37 @@
 
 .add-module-btn:hover {
     background: #004d00 !important;
+}
+
+.history-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-btn:hover {
+    background: #b91c1c;
+}
+
+.history-btn.active {
+    background: #059669;
+}
+
+.history-btn.active:hover {
+    background: #047857;
+}
+
+.history-btn i {
+    font-size: 14px;
 }
 
 .clear-all-btn {
@@ -587,7 +639,370 @@
     max-width: 300px;
 }
 
-/* Responsive Design */
+/* Lead Details Modal Styles */
+.view-lead-modal {
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.view-lead-form {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.form-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #006400;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-item strong {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.detail-item span {
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.attachments-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.attachment-display-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.attachment-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.attachment-type {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.attachment-size {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+/* Read-only values for view modal */
+.read-only-value {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #374151;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+}
+
+.read-only-value:empty::before {
+    content: 'N/A';
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Ensure all text input fields are fully editable */
+.create-lead-form input[type="text"],
+.create-lead-form input[type="email"],
+.create-lead-form input[type="tel"],
+.create-lead-form input[type="number"],
+.create-lead-form textarea {
+    /* Remove any potential restrictions */
+    pointer-events: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    
+    /* Ensure fields are editable */
+    cursor: text !important;
+    background-color: #ffffff !important;
+    
+    /* Remove any read-only styling */
+    color: #1f2937 !important;
+    opacity: 1 !important;
+    
+    /* Ensure proper focus states */
+    outline: none;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.create-lead-form input[type="text"]:focus,
+.create-lead-form input[type="email"]:focus,
+.create-lead-form input[type="tel"]:focus,
+.create-lead-form input[type="number"]:focus,
+.create-lead-form textarea:focus {
+    border-color: #10b981;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Ensure no character limitations on input fields */
+.create-lead-form input[type="text"],
+.create-lead-form input[type="email"],
+.create-lead-form input[type="tel"],
+.create-lead-form input[type="number"],
+.create-lead-form textarea {
+    /* Remove any character limitations */
+    maxlength: none;
+    minlength: 0;
+    /* Prevent text truncation */
+    text-overflow: clip;
+    overflow: visible;
+    white-space: normal;
+    word-wrap: break-word;
+    /* Ensure full width usage */
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+/* Ensure textarea has no height limitations */
+.create-lead-form textarea {
+    min-height: 80px;
+    resize: vertical;
+    overflow-y: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Remove any truncation from input placeholders */
+.create-lead-form input::placeholder,
+.create-lead-form textarea::placeholder {
+    text-overflow: clip;
+    overflow: visible;
+    white-space: normal;
+}
+
+/* Ensure form containers don't limit input width */
+.create-lead-form,
+.form-section,
+.form-row {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+/* Ensure inputs in form rows take full available space */
+.form-row .form-group {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+}
+
+/* Remove any potential truncation from modal content */
+.create-lead-modal .modal-content,
+.create-lead-modal .modal-body {
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+}
+
+/* Ensure dropdown containers don't truncate text */
+.lead-manager-dropdown-container,
+.services-dropdown-container {
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+}
+
+.lead-manager-placeholder,
+.services-placeholder {
+    text-overflow: clip;
+    overflow: visible;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Modal Static Header and Footer Styles */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    max-height: 90vh;
+    position: relative;
+}
+
+/* Static Modal Header */
+.modal-static-header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #006400 0%, #004d00 100%);
+    color: white;
+    padding: 20px 24px;
+    border-bottom: 3px solid #004d00;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.modal-static-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-static-header .header-icon {
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.modal-static-header .header-subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: 4px;
+    font-weight: 400;
+}
+
+/* Static Modal Footer */
+.modal-static-footer {
+    position: sticky;
+    bottom: 0;
+    background: #f8f9fa;
+    border-top: 2px solid #e9ecef;
+    padding: 16px 24px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.modal-static-footer .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-static-footer .footer-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.modal-static-footer .footer-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-static-footer .footer-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-static-footer .footer-btn.secondary {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.modal-static-footer .footer-btn.secondary:hover {
+    background: #d1d5db;
+}
+
+.modal-static-footer .footer-btn.primary {
+    background: #006400;
+    color: white;
+}
+
+.modal-static-footer .footer-btn.primary:hover {
+    background: #004d00;
+}
+
+/* Modal Body - Scrollable Content Area */
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    position: relative;
+}
+
+.modal-body-content {
+    padding: 24px;
+}
+
+/* Enhanced Modal Structure */
+.modal-content.enhanced {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    max-height: 90vh;
+}
+
+.modal-content.enhanced .modal-static-header {
+    flex-shrink: 0;
+}
+
+.modal-content.enhanced .modal-body {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.modal-content.enhanced .modal-static-footer {
+    flex-shrink: 0;
+}
+
+/* Responsive Modal Headers and Footers */
 @media (max-width: 768px) {
     .modules-header {
         flex-direction: column;
@@ -627,5 +1042,31 @@
     .reports-table th,
     .reports-table td {
         padding: 8px 12px;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-static-header {
+        padding: 16px 20px;
+    }
+    
+    .modal-static-header h2 {
+        font-size: 18px;
+    }
+    
+    .modal-static-footer {
+        padding: 12px 20px;
+    }
+    
+    .modal-static-footer .footer-content {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .modal-static-footer .footer-actions {
+        justify-content: center;
     }
 } 

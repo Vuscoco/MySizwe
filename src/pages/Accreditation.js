@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HubSpotLayout from '../components/HubSpotLayout';
 import AccreditationModal from '../components/AccreditationModal';
+import GridCardGuide from '../components/GridCardGuide';
 import '../css/Accreditation.css';
 
 const Accreditation = () => {
@@ -24,6 +25,8 @@ const Accreditation = () => {
 
     // New state variables
     const [showAccreditationForm, setShowAccreditationForm] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
+    const [showAddAccreditationModal, setShowAddAccreditationModal] = useState(false);
     const [accreditationForm, setAccreditationForm] = useState({
         accreditingBody: 'QCTO',
         accreditationNumber: '',
@@ -367,6 +370,110 @@ const Accreditation = () => {
         }
     };
 
+    // Guide steps for add-accreditation functionality
+    const guideSteps = [
+        {
+            title: "Add Accreditation Button",
+            description: "Click this button to add a new accreditation to your system. This opens the accreditation form where you can enter all the required details.",
+            target: ".header-actions .btn-secondary"
+        },
+        {
+            title: "Accrediting Body",
+            description: "Select the accrediting body for your qualification. Common options include QCTO, SETA, and other recognized bodies.",
+            target: ".accreditation-form select[name='accreditingBody']"
+        },
+        {
+            title: "Accreditation Number",
+            description: "Enter the unique accreditation number assigned to your qualification. This is typically provided by the accrediting body.",
+            target: ".accreditation-form input[name='accreditationNumber']"
+        },
+        {
+            title: "Qualifications",
+            description: "Select the specific qualification that this accreditation covers. The list will update based on your accreditation number.",
+            target: ".accreditation-form select[name='qualifications']"
+        },
+        {
+            title: "NQF Level",
+            description: "The National Qualifications Framework level of your qualification. This is automatically populated based on your qualification selection.",
+            target: ".accreditation-form select[name='nqfLevel']"
+        },
+        {
+            title: "OFO Number",
+            description: "The Organising Framework for Occupations number. This is automatically populated based on your NQF level selection.",
+            target: ".accreditation-form input[name='ofoNumber']"
+        },
+        {
+            title: "Issued Date",
+            description: "The date when the accreditation was issued. This helps track when your accreditation became valid.",
+            target: ".accreditation-form input[name='issuedBy']"
+        },
+        {
+            title: "Expiry Date",
+            description: "The date when your accreditation expires. This is crucial for compliance monitoring and renewal planning.",
+            target: ".accreditation-form input[name='expires']"
+        },
+        {
+            title: "Duration",
+            description: "The duration of your accreditation validity period. This is automatically calculated based on your issue and expiry dates.",
+            target: ".accreditation-form input[name='duration']"
+        },
+        {
+            title: "Submit Accreditation",
+            description: "Click this button to save your new accreditation. All fields will be validated before submission.",
+            target: ".accreditation-form .btn-primary"
+        }
+    ];
+
+    const handleGuideComplete = () => {
+        setShowGuide(false);
+        localStorage.setItem('accreditationGuideSeen', 'true');
+    };
+
+    const handleGuideSkip = () => {
+        setShowGuide(false);
+        localStorage.setItem('accreditationGuideSeen', 'true');
+    };
+
+    const startGuide = () => {
+        setShowGuide(true);
+    };
+
+    const openAddAccreditationModal = () => {
+        setShowAddAccreditationModal(true);
+        // Reset form data when opening modal
+        setFormData({
+            accreditingBody: 'QCTO',
+            accreditationNumber: '',
+            qualifications: '',
+            nqfLevel: '',
+            ofoNumber: '',
+            issuedBy: '',
+            expires: '',
+            duration: ''
+        });
+    };
+
+    const closeAddAccreditationModal = () => {
+        setShowAddAccreditationModal(false);
+        // Reset form data when closing modal
+        setFormData({
+            accreditingBody: 'QCTO',
+            accreditationNumber: '',
+            qualifications: '',
+            nqfLevel: '',
+            ofoNumber: '',
+            issuedBy: '',
+            expires: '',
+            duration: ''
+        });
+    };
+
+    const handleModalSubmit = (e) => {
+        e.preventDefault();
+        handleSubmit(e);
+        closeAddAccreditationModal();
+    };
+
     useEffect(() => {
         if (formData.accreditationNumber) {
             updateQualifications();
@@ -388,43 +495,11 @@ const Accreditation = () => {
     // (move all code from return, except Sidebar/Header, into a variable)
     const pageContent = (
         <>
-            {/* HubSpot-style Header */}
-            <div className="accreditation-header">
-                <div className="header-content">
-                    <button 
-                        className="back-button" 
-                        onClick={() => window.history.back()}
-                    >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        Back
-                    </button>
-                    <div className="header-title">
-                        <h1>Accreditation Management</h1>
-                        <p>Monitor and manage all your training accreditations, qualifications, and compliance status</p>
-                    </div>
-                    <div className="header-actions">
-                        <button className="btn-secondary" onClick={() => setShowAccreditationForm(!showAccreditationForm)}>
-                            <i className="fas fa-plus"></i>
-                            Add Accreditation
-                        </button>
-                        <button className="btn-primary" onClick={() => alert('Export functionality coming soon!')}>
-                            <i className="fas fa-download"></i>
-                            Export Report
-                        </button>
-                    </div>
-                </div>
-            </div>
+
 
             <div className="accreditation-content">
                 {/* Professional Accreditation Summary */}
                 <section className="accreditation-overview">
-                    <div className="section-header">
-                        <h2>Accreditation Summary</h2>
-                        <p>Comprehensive overview of your training accreditations and compliance status</p>
-                    </div>
-                    
                     <div className="summary-metrics">
                         <div className="metric-card primary">
                             <div className="metric-icon">
@@ -460,19 +535,7 @@ const Accreditation = () => {
                             </div>
                         </div>
                         
-                        <div className="metric-card success">
-                            <div className="metric-icon">
-                                <i className="fas fa-check-circle"></i>
-                            </div>
-                            <div className="metric-content">
-                                <h3>Compliance Rate</h3>
-                                <div className="metric-value">{accreditationData.length > 0 ? '100%' : '0%'}</div>
-                                <div className="metric-trend positive">
-                                    <i className="fas fa-arrow-up"></i>
-                                    <span>+2% from last month</span>
-                                </div>
-                            </div>
-                        </div>
+
                         
                         <div className="metric-card danger">
                             <div className="metric-icon">
@@ -494,31 +557,82 @@ const Accreditation = () => {
                         </div>
                     </div>
                     
-                    <div className="summary-stats">
-                        <div className="stat-item">
-                            <div className="stat-label">Total Qualifications</div>
-                            <div className="stat-value">{accreditationData.length}</div>
-                            <div className="stat-change positive">+{Math.max(0, accreditationData.length - 1)} new this quarter</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-label">Average NQF Level</div>
-                            <div className="stat-value">{accreditationData.length > 0 ? 
-                                (accreditationData.reduce((sum, acc) => {
-                                    const nqfLevel = acc.nqfLevel;
-                                    if (nqfLevel && nqfLevel.includes('NQF')) {
-                                        const level = parseInt(nqfLevel.match(/\d+/)?.[0] || 0);
-                                        return sum + level;
-                                    }
-                                    return sum;
-                                }, 0) / accreditationData.filter(acc => acc.nqfLevel && acc.nqfLevel.includes('NQF')).length).toFixed(1) : '0.0'
-                            }</div>
-                            <div className="stat-change positive">+0.3 from last year</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-label">QCTO Compliance</div>
-                            <div className="stat-value">{accreditationData.filter(acc => acc.accreditingBody === 'QCTO').length > 0 ? '100%' : '0%'}</div>
-                            <div className="stat-change positive">Fully compliant</div>
-                        </div>
+
+                </section>
+
+                {/* Add Accreditation Prompt */}
+                <div className="accreditation-prompt">
+                    <div className="prompt-content">
+                        <h2>Add New Accreditation</h2>
+                        <p>Click the button below to add a new accreditation to your system</p>
+                        <button className="btn-primary" onClick={openAddAccreditationModal}>
+                            <i className="fas fa-plus"></i>
+                            Add Accreditation
+                        </button>
+                    </div>
+                </div>
+
+                {/* Accreditation Table Section */}
+                <section className="recent-activities">
+                    <div className="table-header">
+                        <h2>Accreditation Records ({accreditationData.length} total)</h2>
+                    </div>
+                    
+                    <div className="table-container">
+                        <table className="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Accrediting Body</th>
+                                    <th>Accreditation Number</th>
+                                    <th>Qualifications</th>
+                                    <th>NQF Level</th>
+                                    <th>OFO Number</th>
+                                    <th>Issued By</th>
+                                    <th>Expires</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {accreditationData.map((accreditation) => (
+                                    <tr key={accreditation.id}>
+                                        <td>{accreditation.accreditingBody}</td>
+                                        <td>{accreditation.accreditationNumber}</td>
+                                        <td>{accreditation.qualifications}</td>
+                                        <td>{accreditation.nqfLevel}</td>
+                                        <td>{accreditation.ofoNumber}</td>
+                                        <td>{accreditation.issuedBy}</td>
+                                        <td>{accreditation.expires}</td>
+                                        <td>{accreditation.duration}</td>
+                                        <td>
+                                            <div className="action-buttons">
+                                                <button 
+                                                    className="btn-icon" 
+                                                    title="View Details"
+                                                    onClick={() => handleViewAccreditation(accreditation)}
+                                                >
+                                                    <i className="fas fa-eye"></i>
+                                                </button>
+                                                <button 
+                                                    className="btn-icon" 
+                                                    title="Edit"
+                                                    onClick={() => handleEditAccreditation(accreditation)}
+                                                >
+                                                    <i className="fas fa-edit"></i>
+                                                </button>
+                                                <button 
+                                                    className="btn-icon" 
+                                                    title="Delete"
+                                                    onClick={() => handleDeleteAccreditation(accreditation.id)}
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -618,47 +732,7 @@ const Accreditation = () => {
                             </div>
                         </div>
 
-                        {/* Legacy Skills */}
-                        <div className={`carousel-item ${currentSlide === 2 ? 'active' : ''}`}>
-                            <div className="metrics-grid">
-                                <div className="metric-card">
-                                    <div className="metric-header">
-                                        <i className="fas fa-tools"></i>
-                                        <span className="badge success">Active</span>
-                                    </div>
-                                    <h3>Business Administration Skills</h3>
-                                    <p className="metric-value">85%</p>
-                                    <div className="metric-details">
-                                        <span><i className="fas fa-users"></i> 150 Trained</span>
-                                        <span><i className="fas fa-chart-line"></i> 92% Success Rate</span>
-                                    </div>
-                                </div>
-                                <div className="metric-card">
-                                    <div className="metric-header">
-                                        <i className="fas fa-comments"></i>
-                                        <span className="badge info">Growing</span>
-                                    </div>
-                                    <h3>Customer Service Skills</h3>
-                                    <p className="metric-value">78%</p>
-                                    <div className="metric-details">
-                                        <span><i className="fas fa-calendar"></i> Updated: Feb 2024</span>
-                                        <span><i className="fas fa-user-tie"></i> 95 Participants</span>
-                                    </div>
-                                </div>
-                                <div className="metric-card">
-                                    <div className="metric-header">
-                                        <i className="fas fa-laptop-code"></i>
-                                        <span className="badge success">Compliant</span>
-                                    </div>
-                                    <h3>Office Administration Skills</h3>
-                                    <p className="metric-value">90%</p>
-                                    <div className="metric-details">
-                                        <span><i className="fas fa-check"></i> Industry Standard</span>
-                                        <span><i className="fas fa-calendar-check"></i> Last Update: Jan 2024</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Carousel Navigation */}
@@ -675,172 +749,140 @@ const Accreditation = () => {
                             onClick={() => goToSlide(1)}
                             aria-label="Go to slide 2"
                         ></button>
-                        <button 
-                            type="button" 
-                            className={currentSlide === 2 ? 'active' : ''} 
-                            onClick={() => goToSlide(2)}
-                            aria-label="Go to slide 3"
-                        ></button>
                     </div>
                 </div>
             </div>
 
-            {/* Accreditation Table Section */}
-            <section className="recent-activities">
-                <div className="table-header">
-                    <h2>Accreditation Records ({accreditationData.length} total)</h2>
+
+
+            {/* Add Accreditation Modal */}
+            {showAddAccreditationModal && (
+                <div className="modal-overlay" onClick={closeAddAccreditationModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Add New Accreditation</h2>
+                            <button className="modal-close" onClick={closeAddAccreditationModal}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form onSubmit={handleModalSubmit} className="accreditation-form">
+                            <div className="form-group">
+                                <label htmlFor="modal-accreditingBody">Accrediting Body:</label>
+                                <select 
+                                    id="modal-accreditingBody" 
+                                    name="accreditingBody" 
+                                    value={formData.accreditingBody}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="QCTO">QCTO</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-accreditationNumber">Accreditation Number:</label>
+                                <select 
+                                    id="modal-accreditationNumber" 
+                                    name="accreditationNumber" 
+                                    className="accreditation-number" 
+                                    value={formData.accreditationNumber}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="" disabled>Select accreditation number</option>
+                                    <option value="05-QCTO/AC-TTC240924085655">05-QCTO/AC-TTC240924085655</option>
+                                    <option value="05-QCTO/AC-TTC250125102623">05-QCTO/AC-TTC250125102623</option>
+                                    <option value="05-QCTO/SDP010524113839">05-QCTO/SDP010524113839</option>
+                                    <option value="05-QCTO/SDP040325132739">05-QCTO/SDP040325132739</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-qualifications">Qualifications:</label>
+                                <select 
+                                    id="modal-qualifications" 
+                                    name="qualifications" 
+                                    className="qualifications" 
+                                    value={formData.qualifications}
+                                    onChange={handleInputChange}
+                                    required
+                                >
+                                    <option value="" disabled>Select qualifications</option>
+                                    {formData.accreditationNumber && qualificationsData[formData.accreditationNumber]?.map((qual, index) => (
+                                        <option key={index} value={qual.name}>{qual.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-nqfLevel">NQF Level:</label>
+                                <input 
+                                    type="text" 
+                                    id="modal-nqfLevel" 
+                                    name="nqfLevel" 
+                                    value={formData.nqfLevel}
+                                    readOnly
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-ofoNumber">OFO Code:</label>
+                                <input 
+                                    type="text" 
+                                    id="modal-ofoNumber" 
+                                    name="ofoNumber" 
+                                    placeholder="Auto-filled based on NQF Level"
+                                    value={formData.ofoNumber}
+                                    readOnly
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-issuedBy">Issued By:</label>
+                                <input 
+                                    type="date" 
+                                    id="modal-issuedBy" 
+                                    name="issuedBy" 
+                                    value={formData.issuedBy}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-expires">Expires:</label>
+                                <input 
+                                    type="date" 
+                                    id="modal-expires" 
+                                    name="expires" 
+                                    value={formData.expires}
+                                    readOnly
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="modal-duration">Duration:</label>
+                                <input 
+                                    type="text" 
+                                    id="modal-duration" 
+                                    name="duration" 
+                                    value={formData.duration}
+                                    readOnly
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn-secondary" onClick={closeAddAccreditationModal}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn-primary">
+                                    Add Accreditation
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                
-                <div className="table-container">
-                    <table className="reports-table">
-                        <thead>
-                            <tr>
-                                <th>Accrediting Body</th>
-                                <th>Accreditation Number</th>
-                                <th>Qualifications</th>
-                                <th>NQF Level</th>
-                                <th>OFO Number</th>
-                                <th>Issued By</th>
-                                <th>Expires</th>
-                                <th>Duration</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {accreditationData.map((accreditation) => (
-                                <tr key={accreditation.id}>
-                                    <td>{accreditation.accreditingBody}</td>
-                                    <td>{accreditation.accreditationNumber}</td>
-                                    <td>{accreditation.qualifications}</td>
-                                    <td>{accreditation.nqfLevel}</td>
-                                    <td>{accreditation.ofoNumber}</td>
-                                    <td>{accreditation.issuedBy}</td>
-                                    <td>{accreditation.expires}</td>
-                                    <td>{accreditation.duration}</td>
-                                    <td>
-                                        <div className="action-buttons">
-                                            <button 
-                                                className="btn-icon" 
-                                                title="View Details"
-                                                onClick={() => handleViewAccreditation(accreditation)}
-                                            >
-                                                <i className="fas fa-eye"></i>
-                                            </button>
-                                            <button 
-                                                className="btn-icon" 
-                                                title="Edit"
-                                                onClick={() => handleEditAccreditation(accreditation)}
-                                            >
-                                                <i className="fas fa-edit"></i>
-                                            </button>
-                                            <button 
-                                                className="btn-icon" 
-                                                title="Delete"
-                                                onClick={() => handleDeleteAccreditation(accreditation.id)}
-                                            >
-                                                <i className="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            {/* Add New Accreditation Section */}
-            <section className="add-accreditation">
-                <h2>Add New Accreditation</h2>
-                <form onSubmit={handleSubmit}>
-                    <label htmlFor="accreditingBody">Accrediting Body:</label>
-                    <input 
-                        type="text" 
-                        id="accreditingBody" 
-                        name="accreditingBody" 
-                        value={formData.accreditingBody}
-                        onChange={handleInputChange}
-                    />
-
-                    <label htmlFor="accreditationNumber">Accreditation Number:</label>
-                    <select 
-                        id="accreditationNumber" 
-                        name="accreditationNumber" 
-                        className="accreditation-number" 
-                        value={formData.accreditationNumber}
-                        onChange={handleInputChange}
-                    >
-                        <option value="" disabled>Accreditation number</option>
-                        <option value="05-QCTO/AC-TTC240924085655">05-QCTO/AC-TTC240924085655</option>
-                        <option value="05-QCTO/AC-TTC250125102623">05-QCTO/AC-TTC250125102623</option>
-                        <option value="05-QCTO/SDP010524113839">05-QCTO/SDP010524113839</option>
-                        <option value="05-QCTO/SDP040325132739">05-QCTO/SDP040325132739</option>
-                    </select>
-
-                    <label htmlFor="qualifications">Qualifications:</label>
-                    <select 
-                        id="qualifications" 
-                        name="qualifications" 
-                        className="qualifications" 
-                        value={formData.qualifications}
-                        onChange={handleInputChange}
-                    >
-                        <option value="" disabled>Select qualifications</option>
-                        {formData.accreditationNumber && qualificationsData[formData.accreditationNumber]?.map((qual, index) => (
-                            <option key={index} value={qual.name}>{qual.name}</option>
-                        ))}
-                    </select>
-
-                    <label htmlFor="nqfLevel">NQF Level:</label>
-                    <input 
-                        type="text" 
-                        id="nqfLevel" 
-                        name="nqfLevel" 
-                        value={formData.nqfLevel}
-                        readOnly
-                    />
-
-                    <label htmlFor="ofoNumber">OFO Number:</label>
-                    <input 
-                        type="text" 
-                        id="ofoNumber" 
-                        name="ofoNumber" 
-                        placeholder="Auto-filled based on NQF Level"
-                        value={formData.ofoNumber}
-                        readOnly
-                    />
-
-                    <label htmlFor="issuedBy">Issued By:</label>
-                    <input 
-                        type="date" 
-                        id="issuedBy" 
-                        name="issuedBy" 
-                        value={formData.issuedBy}
-                        onChange={handleInputChange}
-                    />
-
-                    <label htmlFor="expires">Expires:</label>
-                    <input 
-                        type="date" 
-                        id="expires" 
-                        name="expires" 
-                        value={formData.expires}
-                        readOnly
-                    />
-
-                    <label htmlFor="duration">Duration:</label>
-                    <input 
-                        type="text" 
-                        id="duration" 
-                        name="duration" 
-                        value={formData.duration}
-                        readOnly
-                    />
-
-                    <button type="submit">Add Accreditation</button>
-                    <button type="button">Upload Document</button>
-                </form>
-            </section>
+            )}
             </div>
         </>
     );
@@ -849,16 +891,16 @@ const Accreditation = () => {
         <HubSpotLayout 
             title="Accreditation Management" 
             description="Manage your accreditation records and qualifications"
-            actions={[
-                {
-                    label: 'Add Accreditation',
-                    variant: 'primary',
-                    icon: 'fas fa-plus',
-                    onClick: () => setShowAccreditationForm(true)
-                }
-            ]}
         >
             {pageContent}
+
+            {/* Add Accreditation Guide */}
+            <GridCardGuide 
+                isActive={showGuide}
+                onComplete={handleGuideComplete}
+                onSkip={handleGuideSkip}
+                steps={guideSteps}
+            />
         </HubSpotLayout>
     );
 };

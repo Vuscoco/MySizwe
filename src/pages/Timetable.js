@@ -185,20 +185,7 @@ const Timetable = () => {
         return publicHolidays.find(holiday => holiday.date === dateString) || null;
     };
 
-    /**
-     * Determines the tranche number (1-4) based on the month.
-     * Tranche 1: Jan-Mar, Tranche 2: Apr-Jun, Tranche 3: Jul-Sep, Tranche 4: Oct-Dec
-     * @param {Date} date - The date to check.
-     * @returns {number} The tranche number (1-4).
-     */
-    const getTrancheForDate = (date) => {
-        const month = date.getMonth(); // 0-11
-        if (month >= 0 && month <= 2) return 1;      // Jan-Mar
-        if (month >= 3 && month <= 5) return 2;      // Apr-Jun
-        if (month >= 6 && month <= 8) return 3;      // Jul-Sep
-        if (month >= 9 && month <= 11) return 4;     // Oct-Dec
-        return 1; // Default fallback
-    };
+
 
     /**
      * Handles the submission of the new booking form.
@@ -256,10 +243,6 @@ const Timetable = () => {
                             <h2 className="month-title">
                                 {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                             </h2>
-                            <div className="tranche-indicator">
-                                <span className="tranche-label">Tranche</span>
-                                <span className="tranche-number">{getTrancheForDate(selectedDate)}</span>
-                            </div>
                         </div>
                         <button
                             onClick={() => navigateMonth(1)}
@@ -290,19 +273,21 @@ const Timetable = () => {
                                     onClick={() => handleDateClick(day.date)}
                                     title={holiday ? holiday.name : ''}
                                 >
-                                    <span className="day-number">{day.date.getDate()}</span>
-                                    {holiday && (
-                                        <div className="holiday-indicator" title={holiday.name}>
-                                            🎉
-                                        </div>
-                                    )}
-                                    {getBookingsForDate(day.date).length > 0 && (
-                                        <div className="booking-indicator">
-                                            {getBookingsForDate(day.date).some(booking => booking.type === 'agenda') && (
-                                                <div className="agenda-indicator" title="Agenda Event">📋</div>
-                                            )}
-                                        </div>
-                                    )}
+                                    <div className="day-content">
+                                        <span className="day-number">{day.date.getDate()}</span>
+                                        {holiday && (
+                                            <div className="holiday-indicator" title={holiday.name}>
+                                                🎉
+                                            </div>
+                                        )}
+                                        {getBookingsForDate(day.date).length > 0 && (
+                                            <div className="booking-indicator">
+                                                {getBookingsForDate(day.date).some(booking => booking.type === 'agenda') && (
+                                                    <div className="agenda-indicator" title="Agenda Event">📋</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             );
                         })}

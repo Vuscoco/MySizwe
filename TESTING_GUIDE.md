@@ -6,7 +6,7 @@ The TestPage now has dynamic functionality that allows you to add new entries to
 ## How to Test
 
 ### 1. Adding Client Data
-- Navigate to **Client Creation** or **SETA Client Creation** pages
+- Navigate to **Client Creation** page
 - Fill out the form with client information
 - Submit the form
 - The new client will automatically appear in the TestPage Clients table
@@ -39,7 +39,7 @@ The TestPage now has dynamic functionality that allows you to add new entries to
 
 ### Integration Points
 - **ClientCreation.js**: Saves client data to localStorage after successful Django API submission
-- **SetaClientCreation.js**: Saves SETA client data to localStorage
+
 - **TestPage.js**: Loads and displays data from localStorage
 - **TestPage.js**: Provides quick add form for accreditation data
 

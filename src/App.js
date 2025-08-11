@@ -6,12 +6,13 @@ import './css/global-layout.css';
 // Import pages
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import WelcomeIntro from './components/WelcomeIntro';
 import Clients from './pages/Clients';
 import ClientCreation from './pages/ClientCreation';
-import SetaClientCreation from './pages/SetaClientCreation';
-import IndustrialClientCreation from './pages/IndustrialClientCreation';
+
+
 import Accreditation from './pages/Accreditation';
-import WSPTraining from './pages/WSPTraining';
+import ProjectManagement from './pages/ProjectManagement';
 import SLAPreview from './pages/SLAPreview';
 import SkillsProgram from './pages/SkillsProgram';
 import ContractCreation from './pages/ContractCreation';
@@ -34,6 +35,7 @@ function App() {
           {/* Login page is ALWAYS the first page - NO AUTHENTICATION REQUIRED */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/welcome-intro" element={<WelcomeIntro onComplete={() => {}} />} />
           
           {/* All other routes wrapped in AuthProvider for authentication */}
           <Route path="/*" element={
@@ -71,22 +73,8 @@ function App() {
                     </ProtectedRoute>
                   } 
                 />
-                <Route 
-                  path="/seta-client-creation" 
-                  element={
-                    <ProtectedRoute>
-                      <SetaClientCreation />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/industrial-client-creation" 
-                  element={
-                    <ProtectedRoute>
-                      <IndustrialClientCreation />
-                    </ProtectedRoute>
-                  } 
-                />
+
+
                 <Route 
                   path="/accreditation" 
                   element={
@@ -115,7 +103,7 @@ function App() {
                   path="/wsp-training" 
                   element={
                     <ProtectedRoute>
-                      <WSPTraining />
+                      <ProjectManagement />
                     </ProtectedRoute>
                   } 
                 />

@@ -38,8 +38,8 @@ const Login = () => {
         localStorage.setItem('userName', name);
       }
       
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
+      // Show welcome intro after successful login
+      navigate('/welcome-intro');
     } catch (error) {
       // Handle specific authentication errors
       let errorMessage = 'Login failed: ';
@@ -95,7 +95,8 @@ const Login = () => {
       console.log('Registration successful! Name stored:', name);
       console.log('User displayName after update:', userCredential.user.displayName);
       
-      alert('Registration successful! You can now log in.');
+      // Show welcome intro after successful registration
+      navigate('/welcome-intro');
       
       // Clear the form after successful registration
       setName('');
@@ -129,7 +130,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <header>
-        <h1>My Sizwe</h1>
+        <h1>MySizwe</h1>
       </header>
       <main>
         <section id="auth-section">

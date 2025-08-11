@@ -3,6 +3,7 @@ import HubSpotLayout from '../components/HubSpotLayout';
 import GridCardGuide from '../components/GridCardGuide';
 import '../css/global-layout.css';
 import '../css/Facilitator.css';
+import '../css/Timetable.css';
 
 // Mock data for the facilitation session report
 const sessionData = {
@@ -64,6 +65,14 @@ const Facilitator = () => {
     const [session, setSession] = useState(sessionData);
     const [showAgendaForm, setShowAgendaForm] = useState(false);
     const [showFacilitatorForm, setShowFacilitatorForm] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [editingSchedule, setEditingSchedule] = useState(null);
+    const [scheduleData, setScheduleData] = useState([]);
+    
+    // Calendar state
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showBookingModal, setShowBookingModal] = useState(false);
+    const [bookings, setBookings] = useState([]);
     const [agendaFormData, setAgendaFormData] = useState({
         name: '',
         progress: 0,
@@ -82,6 +91,15 @@ const Facilitator = () => {
         unitStandardTitle: '',
         credit: ''
     });
+    const [scheduleForm, setScheduleForm] = useState({
+        title: '',
+        type: 'training',
+        date: new Date().toISOString().split('T')[0],
+        duration: 60,
+        facilitator: '',
+        location: '',
+        description: ''
+    });
     const formRef = useRef(null);
     const [showGuide, setShowGuide] = useState(false);
 
@@ -91,6 +109,16 @@ const Facilitator = () => {
         if (storedFacilitators) {
             setFacilitators(JSON.parse(storedFacilitators));
         }
+        
+        // Load schedule data from localStorage
+        const storedSchedule = localStorage.getItem('scheduleData');
+        if (storedSchedule) {
+            setScheduleData(JSON.parse(storedSchedule));
+        }
+        
+        // Load agenda events from localStorage for calendar
+        const agendaEvents = JSON.parse(localStorage.getItem('agendaEvents') || '[]');
+        setBookings(prevBookings => [...prevBookings, ...agendaEvents]);
         
         setLoading(false);
     }, []);
@@ -265,6 +293,71 @@ const Facilitator = () => {
             unitStandardTitle: '',
             credit: ''
         });
+    };
+
+    // Schedule handling functions
+    const handleScheduleInputChange = (e) => {
+        const { name, value } = e.target;
+        setScheduleForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleScheduleSubmit = (e) => {
+        e.preventDefault();
+        
+        if (editingSchedule) {
+            // Update existing schedule
+            const updatedSchedules = scheduleData.map(schedule => 
+                schedule.id === editingSchedule.id ? { ...schedule, ...scheduleForm } : schedule
+            );
+            setScheduleData(updatedSchedules);
+            localStorage.setItem('scheduleData', JSON.stringify(updatedSchedules));
+        } else {
+            // Add new schedule
+            const newSchedule = {
+                id: Date.now().toString(),
+                ...scheduleForm
+            };
+            const updatedSchedules = [...scheduleData, newSchedule];
+            setScheduleData(updatedSchedules);
+            localStorage.setItem('scheduleData', JSON.stringify(updatedSchedules));
+        }
+        
+        setShowScheduleModal(false);
+        setEditingSchedule(null);
+        setScheduleForm({
+            title: '',
+            type: 'training',
+            date: new Date().toISOString().split('T')[0],
+            duration: 60,
+            facilitator: '',
+            location: '',
+            description: ''
+        });
+    };
+
+    const handleEditSchedule = (schedule) => {
+        setEditingSchedule(schedule);
+        setScheduleForm({
+            title: schedule.title || '',
+            type: schedule.type || 'training',
+            date: schedule.date || new Date().toISOString().split('T')[0],
+            duration: schedule.duration || 60,
+            facilitator: schedule.facilitator || '',
+            location: schedule.location || '',
+            description: schedule.description || ''
+        });
+        setShowScheduleModal(true);
+    };
+
+    const handleDeleteSchedule = (scheduleId) => {
+        if (window.confirm('Are you sure you want to delete this schedule?')) {
+            const updatedSchedules = scheduleData.filter(schedule => schedule.id !== scheduleId);
+            setScheduleData(updatedSchedules);
+            localStorage.setItem('scheduleData', JSON.stringify(updatedSchedules));
+        }
     };
 
 
@@ -443,6 +536,99 @@ const Facilitator = () => {
 
     const startGuide = () => {
         setShowGuide(true);
+    };
+
+    // Calendar functions
+    const getDaysInMonth = (date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDayOfMonth = new Date(year, month, 1);
+        const lastDayOfMonth = new Date(year, month + 1, 0);
+        const startDayOfWeek = firstDayOfMonth.getDay();
+        const days = [];
+
+        // Add days from previous month
+        for (let i = startDayOfWeek - 1; i >= 0; i--) {
+            const day = new Date(year, month, -i);
+            days.push({ date: day, isCurrentMonth: false });
+        }
+
+        // Add days from current month
+        for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+            const date = new Date(year, month, day);
+            days.push({ date: date, isCurrentMonth: true });
+        }
+
+        // Add days from next month to fill the grid
+        const remainingDays = 42 - days.length;
+        for (let day = 1; day <= remainingDays; day++) {
+            const date = new Date(year, month + 1, day);
+            days.push({ date: date, isCurrentMonth: false });
+        }
+
+        return days;
+    };
+
+    const navigateMonth = (offset) => {
+        setSelectedDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setMonth(newDate.getMonth() + offset);
+            return newDate;
+        });
+    };
+
+    const handleDateClick = (date) => {
+        setSelectedDate(date);
+    };
+
+    const getBookingsForDate = (date) => {
+        return bookings.filter(booking => {
+            const bookingDate = new Date(booking.date);
+            return bookingDate.toDateString() === date.toDateString();
+        });
+    };
+
+    const getHolidayForDate = (date) => {
+        const dateString = date.toISOString().split('T')[0];
+        const publicHolidays = [
+            { date: '2024-01-01', name: 'New Year\'s Day' },
+            { date: '2025-01-01', name: 'New Year\'s Day' },
+            { date: '2026-01-01', name: 'New Year\'s Day' },
+            { date: '2024-03-21', name: 'Human Rights Day' },
+            { date: '2025-03-21', name: 'Human Rights Day' },
+            { date: '2026-03-21', name: 'Human Rights Day' },
+            { date: '2024-03-29', name: 'Good Friday' },
+            { date: '2025-04-18', name: 'Good Friday' },
+            { date: '2026-04-03', name: 'Good Friday' },
+            { date: '2024-04-01', name: 'Family Day' },
+            { date: '2025-04-21', name: 'Family Day' },
+            { date: '2026-04-06', name: 'Family Day' },
+            { date: '2024-04-27', name: 'Freedom Day' },
+            { date: '2025-04-27', name: 'Freedom Day' },
+            { date: '2026-04-27', name: 'Freedom Day' },
+            { date: '2024-05-01', name: 'Workers\' Day' },
+            { date: '2025-05-01', name: 'Workers\' Day' },
+            { date: '2026-05-01', name: 'Workers\' Day' },
+            { date: '2024-06-16', name: 'Youth Day' },
+            { date: '2025-06-16', name: 'Youth Day' },
+            { date: '2026-06-16', name: 'Youth Day' },
+            { date: '2024-08-09', name: 'National Women\'s Day' },
+            { date: '2025-08-09', name: 'National Women\'s Day' },
+            { date: '2026-08-09', name: 'National Women\'s Day' },
+            { date: '2024-09-24', name: 'Heritage Day' },
+            { date: '2025-09-24', name: 'Heritage Day' },
+            { date: '2026-09-24', name: 'Heritage Day' },
+            { date: '2024-12-16', name: 'Day of Reconciliation' },
+            { date: '2025-12-16', name: 'Day of Reconciliation' },
+            { date: '2026-12-16', name: 'Day of Reconciliation' },
+            { date: '2024-12-25', name: 'Christmas Day' },
+            { date: '2025-12-25', name: 'Christmas Day' },
+            { date: '2026-12-25', name: 'Christmas Day' },
+            { date: '2024-12-26', name: 'Day of Goodwill' },
+            { date: '2025-12-26', name: 'Day of Goodwill' },
+            { date: '2026-12-26', name: 'Day of Goodwill' },
+        ];
+        return publicHolidays.find(holiday => holiday.date === dateString);
     };
 
     const AgendaForm = () => (
@@ -703,6 +889,146 @@ const Facilitator = () => {
                     </div>
                 </div>
 
+                {/* Calendar Section */}
+                <div className="professional-calendar mb-8">
+                    <div className="calendar-container">
+                        <div className="calendar-section">
+                            {/* Calendar Header: Month navigation and display */}
+                            <div className="calendar-header">
+                                <button
+                                    onClick={() => navigateMonth(-1)}
+                                    className="nav-button"
+                                    aria-label="Previous Month"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <div className="calendar-title-section">
+                                    <h2 className="month-title">
+                                        {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                    </h2>
+                                </div>
+                                <button
+                                    onClick={() => navigateMonth(1)}
+                                    className="nav-button"
+                                    aria-label="Next Month"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Calendar Grid: Days of the week headers and individual day cells */}
+                            <div className="calendar-grid">
+                                {/* Day Headers */}
+                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                                    <div key={day} className="day-header">{day}</div>
+                                ))}
+                                
+                                {/* Calendar Days */}
+                                {getDaysInMonth(selectedDate).map((day, index) => {
+                                    const holiday = getHolidayForDate(day.date);
+                                    return (
+                                        <div
+                                            key={index}
+                                            className={`calendar-day ${!day.isCurrentMonth ? 'other-month' : ''} ${day.date.toDateString() === new Date().toDateString() ? 'today' : ''} ${selectedDate.toDateString() === day.date.toDateString() && day.isCurrentMonth ? 'selected' : ''} ${holiday ? 'holiday' : ''}`}
+                                            onClick={() => handleDateClick(day.date)}
+                                            title={holiday ? holiday.name : ''}
+                                        >
+                                            <div className="day-content">
+                                                <span className="day-number">{day.date.getDate()}</span>
+                                                {holiday && (
+                                                    <div className="holiday-indicator" title={holiday.name}>
+                                                        🎉
+                                                    </div>
+                                                )}
+                                                {getBookingsForDate(day.date).length > 0 && (
+                                                    <div className="booking-indicator">
+                                                        {getBookingsForDate(day.date).some(booking => booking.type === 'agenda') && (
+                                                            <div className="agenda-indicator" title="Agenda Event">📋</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Selected Date Info & Add Booking Button */}
+                            <div className="calendar-footer">
+                                <div className="selected-date-info">
+                                    <h3 className="selected-date-title">
+                                        Selected Date: {selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                    </h3>
+                                    <p className="booking-count">
+                                        Bookings: {getBookingsForDate(selectedDate).length}
+                                    </p>
+                                </div>
+                                <button
+                                    className="add-booking-btn"
+                                    onClick={() => setShowBookingModal(true)}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Add Booking
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Summary Panel - Right Side */}
+                        <div className="summary-panel">
+                            <div className="summary-header">
+                                <h3 className="summary-title">Daily Summary</h3>
+                                <span className="summary-date">{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+                            </div>
+                            
+                            <div className="summary-content">
+                                {getBookingsForDate(selectedDate).length === 0 ? (
+                                    <div className="no-bookings">
+                                        <div className="no-bookings-icon">📅</div>
+                                        <p>No bookings scheduled for this date</p>
+                                        <button 
+                                            className="quick-add-btn"
+                                            onClick={() => setShowBookingModal(true)}
+                                        >
+                                            Add First Booking
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="bookings-list">
+                                        {getBookingsForDate(selectedDate).map((booking, index) => (
+                                            <div key={booking.id || index} className={`booking-card ${booking.type === 'agenda' ? 'agenda-event' : ''}`}>
+                                                <div className="booking-header">
+                                                    <h4 className="booking-title">{booking.title}</h4>
+                                                    <span className={`booking-type ${booking.type}`}>{booking.type}</span>
+                                                </div>
+                                                <div className="booking-details">
+                                                    <div className="booking-info">
+                                                        <span className="info-label">Time:</span>
+                                                        <span className="info-value">{booking.duration} minutes</span>
+                                                    </div>
+                                                    <div className="booking-info">
+                                                        <span className="info-label">Facilitator:</span>
+                                                        <span className="info-value">{booking.facilitator}</span>
+                                                    </div>
+                                                    <div className="booking-info">
+                                                        <span className="info-label">Client:</span>
+                                                        <span className="info-value">{booking.client}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                     {/* Progress Report Section */}
                     <div className="mb-8">
 
@@ -810,7 +1136,7 @@ const Facilitator = () => {
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Company</th>
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Program</th>
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">NQF Level</th>
-                                    <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">ID</th>
+                                    <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Number of Learners</th>
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Learner Name</th>
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Status</th>
                                     <th className="table-header-concrete px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Unit Standard Title</th>
@@ -883,6 +1209,212 @@ const Facilitator = () => {
                         </table>
                     </Card>
                     
+                    
+                    {/* Old Timetable Section */}
+                    <Card title="Facilitator Schedule" className="mt-8">
+                        <div className="old-timetable-section">
+                            <div className="timetable-header">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Training Schedule</h3>
+                                <button 
+                                    className="add-schedule-btn"
+                                    onClick={() => setShowScheduleModal(true)}
+                                >
+                                    <i className="fas fa-plus"></i>
+                                    Add Schedule
+                                </button>
+                            </div>
+                            
+                            <div className="schedule-grid">
+                                {scheduleData.length === 0 ? (
+                                    <div className="no-schedule">
+                                        <i className="fas fa-calendar-times"></i>
+                                        <p>No training schedules found</p>
+                                        <button 
+                                            className="add-first-schedule-btn"
+                                            onClick={() => setShowScheduleModal(true)}
+                                        >
+                                            Add First Schedule
+                                        </button>
+                                    </div>
+                                ) : (
+                                    scheduleData.map((schedule) => (
+                                        <div key={schedule.id} className="schedule-card">
+                                            <div className="schedule-header">
+                                                <h4 className="schedule-title">{schedule.title}</h4>
+                                                <span className={`schedule-type ${schedule.type}`}>
+                                                    {schedule.type}
+                                                </span>
+                                            </div>
+                                            <div className="schedule-details">
+                                                <div className="schedule-info">
+                                                    <i className="fas fa-calendar"></i>
+                                                    <span>{schedule.date}</span>
+                                                </div>
+                                                <div className="schedule-info">
+                                                    <i className="fas fa-clock"></i>
+                                                    <span>{schedule.duration} min</span>
+                                                </div>
+                                                <div className="schedule-info">
+                                                    <i className="fas fa-user"></i>
+                                                    <span>{schedule.facilitator}</span>
+                                                </div>
+                                                <div className="schedule-info">
+                                                    <i className="fas fa-map-marker-alt"></i>
+                                                    <span>{schedule.location}</span>
+                                                </div>
+                                            </div>
+                                            {schedule.description && (
+                                                <div className="schedule-description">
+                                                    {schedule.description}
+                                                </div>
+                                            )}
+                                            <div className="schedule-actions">
+                                                <button 
+                                                    className="edit-schedule-btn"
+                                                    onClick={() => handleEditSchedule(schedule)}
+                                                >
+                                                    <i className="fas fa-edit"></i>
+                                                    Edit
+                                                </button>
+                                                <button 
+                                                    className="delete-schedule-btn"
+                                                    onClick={() => handleDeleteSchedule(schedule.id)}
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Schedule Modal */}
+                    {showScheduleModal && (
+                        <div className="modal-overlay" onClick={() => setShowScheduleModal(false)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header">
+                                    <h3>{editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}</h3>
+                                    <button 
+                                        className="modal-close"
+                                        onClick={() => setShowScheduleModal(false)}
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <form onSubmit={handleScheduleSubmit} className="schedule-form">
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="title">Title *</label>
+                                            <input
+                                                type="text"
+                                                id="title"
+                                                name="title"
+                                                value={scheduleForm.title}
+                                                onChange={handleScheduleInputChange}
+                                                required
+                                                placeholder="Enter schedule title"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="type">Type</label>
+                                            <select
+                                                id="type"
+                                                name="type"
+                                                value={scheduleForm.type}
+                                                onChange={handleScheduleInputChange}
+                                            >
+                                                <option value="training">Training</option>
+                                                <option value="meeting">Meeting</option>
+                                                <option value="assessment">Assessment</option>
+                                                <option value="consultation">Consultation</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="date">Date</label>
+                                            <input
+                                                type="date"
+                                                id="date"
+                                                name="date"
+                                                value={scheduleForm.date}
+                                                onChange={handleScheduleInputChange}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="duration">Duration (minutes)</label>
+                                            <input
+                                                type="number"
+                                                id="duration"
+                                                name="duration"
+                                                value={scheduleForm.duration}
+                                                onChange={handleScheduleInputChange}
+                                                min="15"
+                                                step="15"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label htmlFor="facilitator">Facilitator</label>
+                                            <input
+                                                type="text"
+                                                id="facilitator"
+                                                name="facilitator"
+                                                value={scheduleForm.facilitator}
+                                                onChange={handleScheduleInputChange}
+                                                placeholder="Enter facilitator name"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="location">Location</label>
+                                            <input
+                                                type="text"
+                                                id="location"
+                                                name="location"
+                                                value={scheduleForm.location}
+                                                onChange={handleScheduleInputChange}
+                                                placeholder="Enter location"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="description">Description</label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            value={scheduleForm.description}
+                                            onChange={handleScheduleInputChange}
+                                            placeholder="Enter schedule description"
+                                            rows="3"
+                                        />
+                                    </div>
+
+                                    <div className="form-actions">
+                                        <button 
+                                            type="button" 
+                                            className="btn-secondary"
+                                            onClick={() => setShowScheduleModal(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button type="submit" className="btn-primary">
+                                            <i className="fas fa-save"></i>
+                                            {editingSchedule ? 'Update' : 'Save'} Schedule
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Bottom spacing to prevent cut-off */}
                     <div className="h-8"></div>
             </main>

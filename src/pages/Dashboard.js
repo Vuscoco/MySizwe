@@ -14,7 +14,8 @@ import {
 } from 'chart.js';
 import HubSpotLayout from '../components/HubSpotLayout';
 import WelcomeModal from '../components/WelcomeModal';
-import './Dashboard.css';
+import GridCardGuide from '../components/GridCardGuide';
+import '../css/Dashboard.css';
 import '../css/WelcomeModal.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,6 +48,7 @@ const Dashboard = () => {
     const [quotationsData, setQuotationsData] = useState([]);
     const [showQuotationsModal, setShowQuotationsModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [showGuide, setShowGuide] = useState(false);
 
     const navigate = useNavigate();
 
@@ -82,16 +84,29 @@ const Dashboard = () => {
             
             // Calculate metrics from localStorage data
             const leadsData = JSON.parse(localStorage.getItem('leadsData') || '[]');
+            const clientsData = JSON.parse(localStorage.getItem('clientsData') || '[]');
+            
+            // Get active clients only
+            const activeClients = clientsData.filter(client => {
+                const status = (client.status || '').toLowerCase();
+                return status === 'active' || status === 'converted' || !status;
+            });
+            
             const totalLeads = leadsData.filter(lead => lead.status === 'new' || lead.status === 'pending').length;
             const activeLeads = leadsData.filter(lead => lead.status === 'converted').length;
+            const totalActiveClients = activeClients.length + activeLeads; // Include converted leads as clients
             const conversionRate = totalLeads > 0 ? ((activeLeads / totalLeads) * 100).toFixed(1) : 0;
-            const totalValue = leadsData
+            
+            // Calculate total value from both active clients and converted leads
+            const clientsTotalValue = activeClients.reduce((sum, client) => sum + (parseFloat(client.totalValue) || 0), 0);
+            const leadsTotalValue = leadsData
                 .filter(lead => lead.status === 'converted')
                 .reduce((sum, lead) => sum + (parseFloat(lead.estimated_value) || 0), 0);
+            const totalValue = clientsTotalValue + leadsTotalValue;
             
             setDashboardMetrics({
                 leads: totalLeads,
-                active_leads: activeLeads,
+                active_leads: totalActiveClients, // Now includes active clients
                 conversion_rate: parseFloat(conversionRate),
                 total_value: `R ${(totalValue / 1000000).toFixed(1)}M`
             });
@@ -261,48 +276,7 @@ const Dashboard = () => {
         }
     };
 
-    const serviceData = {
-        labels: ['WSP', 'HR', 'Both WSP & HR'],
-        datasets: [{
-            label: 'Number of Clients',
-            data: [55, 40, 35],
-            backgroundColor: [
-                'rgba(76, 175, 80, 0.8)',
-                'rgba(33, 150, 243, 0.8)',
-                'rgba(255, 152, 0, 0.8)'
-            ],
-            borderColor: [
-                '#4CAF50',
-                '#2196F3',
-                '#FF9800'
-            ],
-            borderWidth: 2
-        }]
-    };
 
-    const serviceOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Service Type Distribution',
-                font: { size: 16, weight: '600' },
-                color: '#2c3e50'
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0,0,0,0.05)' },
-                ticks: { color: '#7f8c8d' }
-            },
-            x: {
-                grid: { color: 'rgba(0,0,0,0.05)' },
-                ticks: { color: '#7f8c8d' }
-            }
-        }
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
@@ -317,7 +291,230 @@ const Dashboard = () => {
         }).format(amount);
     };
 
+    // Guide steps for metric cards
+    const guideSteps = [
+        {
+            title: "Total Leads",
+            description: "This card shows the total number of leads in your system. Click to view detailed lead information and manage your lead pipeline.",
+            target: ".metrics-grid .metric-card:nth-child(1)"
+        },
+        {
+            title: "Active Leads",
+            description: "Displays the number of leads that are currently being actively pursued. These are leads in progress through your sales funnel.",
+            target: ".metrics-grid .metric-card:nth-child(2)"
+        },
+        {
+            title: "Conversion Rate",
+            description: "Shows your lead conversion percentage. This metric helps you track how effectively you're converting leads into clients.",
+            target: ".metrics-grid .metric-card:nth-child(3)"
+        },
+        {
+            title: "Total Value",
+            description: "Displays the total monetary value of all your converted leads. This represents your portfolio's financial worth.",
+            target: ".metrics-grid .metric-card:nth-child(4)"
+        },
+        {
+            title: "Management & Delivery Fee",
+            description: "Shows your management and delivery fees. This represents your service revenue from client management activities.",
+            target: ".metrics-grid .metric-card:nth-child(5)"
+        }
+    ];
 
+    const handleGuideComplete = () => {
+        setShowGuide(false);
+        localStorage.setItem('dashboardGuideSeen', 'true');
+    };
+
+    const handleGuideSkip = () => {
+        setShowGuide(false);
+        localStorage.setItem('dashboardGuideSeen', 'true');
+    };
+
+    const startGuide = () => {
+        setShowGuide(true);
+    };
+
+    // Calculate compliance rate data based on client services
+    const calculateComplianceRateData = () => {
+        try {
+            const clientsData = JSON.parse(localStorage.getItem('clientsData') || '[]');
+            const leadsData = JSON.parse(localStorage.getItem('leadsData') || '[]');
+            
+            // Calculate current tranch based on today's date
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth(); // 0-11
+            
+            // Calculate which tranch we're in (each tranch is 3 months)
+            // Tranch 1: Jan-Mar (months 0-2)
+            // Tranch 2: Apr-Jun (months 3-5)
+            // Tranch 3: Jul-Sep (months 6-8)
+            // Tranch 4: Oct-Dec (months 9-11)
+            const currentTranch = Math.floor(currentMonth / 3) + 1;
+            
+            // Calculate which month of the current tranch we're in (1-3)
+            const monthInTranch = (currentMonth % 3) + 1;
+            
+            // Calculate tranch start and end dates
+            const tranchStartMonth = (currentTranch - 1) * 3;
+            const tranchStartDate = new Date(currentYear, tranchStartMonth, 1);
+            const tranchEndDate = new Date(currentYear, tranchStartMonth + 3, 0); // Last day of the 3rd month
+            
+            // Get tranch name
+            const tranchNames = ['Q1', 'Q2', 'Q3', 'Q4'];
+            const tranchName = tranchNames[currentTranch - 1];
+            
+            // Get all active clients and converted leads within the current tranch period
+            const activeClients = clientsData.filter(client => {
+                const status = (client.status || '').toLowerCase();
+                const isActive = status === 'active' || status === 'converted' || !status;
+                
+                if (!isActive) return false;
+                
+                // Check if client was created or updated within the current tranch
+                const clientDate = new Date(client.createdAt || client.created_date || Date.now());
+                return clientDate >= tranchStartDate && clientDate <= tranchEndDate;
+            });
+            
+            const convertedLeads = leadsData.filter(lead => {
+                if (lead.status !== 'converted') return false;
+                
+                // Check if lead was converted within the current tranch
+                const leadDate = new Date(lead.created_date || lead.convertedAt || Date.now());
+                return leadDate >= tranchStartDate && leadDate <= tranchEndDate;
+            });
+            
+            const allClients = [...activeClients, ...convertedLeads];
+            
+            // Define all possible services
+            const allServices = ['WSP', 'HR', 'Employment Equity', 'Industry Funded', 'SETA Funded', 'BBBEE'];
+            
+            // Count clients using each service
+            const serviceCounts = {};
+            allServices.forEach(service => {
+                serviceCounts[service] = 0;
+            });
+            
+            // Count total clients
+            const totalClients = allClients.length;
+            
+            // Count clients using each service
+            allClients.forEach(client => {
+                const clientServices = client.services || [];
+                clientServices.forEach(service => {
+                    if (serviceCounts.hasOwnProperty(service)) {
+                        serviceCounts[service]++;
+                    }
+                });
+            });
+            
+            // Calculate compliance rates (percentage of clients using each service)
+            const complianceRates = {};
+            allServices.forEach(service => {
+                complianceRates[service] = totalClients > 0 ? ((serviceCounts[service] / totalClients) * 100).toFixed(1) : 0;
+            });
+            
+            return {
+                labels: allServices,
+                data: Object.values(complianceRates).map(rate => parseFloat(rate)),
+                counts: Object.values(serviceCounts),
+                totalClients: totalClients,
+                tranchInfo: {
+                    currentTranch: currentTranch,
+                    tranchName: tranchName,
+                    monthInTranch: monthInTranch,
+                    tranchStartDate: tranchStartDate,
+                    tranchEndDate: tranchEndDate,
+                    currentYear: currentYear
+                }
+            };
+        } catch (error) {
+            console.error('Error calculating compliance rate data:', error);
+            // Return default data if there's an error
+            return {
+                labels: ['WSP', 'HR', 'Employment Equity', 'Industry Funded', 'SETA Funded', 'BBBEE'],
+                data: [25, 30, 40, 55, 35, 45],
+                counts: [25, 30, 40, 55, 35, 45],
+                totalClients: 100,
+                tranchInfo: {
+                    currentTranch: 1,
+                    tranchName: 'Q1',
+                    monthInTranch: 1,
+                    tranchStartDate: new Date(),
+                    tranchEndDate: new Date(),
+                    currentYear: new Date().getFullYear()
+                }
+            };
+        }
+    };
+
+    const complianceRateData = calculateComplianceRateData();
+
+    const complianceRateChartData = {
+        labels: complianceRateData.labels,
+        datasets: [{
+            label: `Tranch ${complianceRateData.tranchInfo.currentTranch}`,
+            data: complianceRateData.data,
+            backgroundColor: [
+                'rgba(76, 175, 80, 0.8)',
+                'rgba(33, 150, 243, 0.8)',
+                'rgba(255, 152, 0, 0.8)',
+                'rgba(156, 39, 176, 0.8)',
+                'rgba(244, 67, 54, 0.8)',
+                'rgba(0, 150, 136, 0.8)'
+            ],
+            borderColor: [
+                '#4CAF50',
+                '#2196F3',
+                '#FF9800',
+                '#9C27B0',
+                '#F44336',
+                '#009688'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    const complianceRateOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Compliance Rate',
+                font: { size: 16, weight: '600' },
+                color: '#2c3e50'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.parsed.y;
+                        const count = complianceRateData.counts[context.dataIndex];
+                        const total = complianceRateData.totalClients;
+                        return `${label}: ${value}% (${count}/${total} clients)`;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                grid: { color: 'rgba(0,0,0,0.05)' },
+                ticks: { 
+                    color: '#7f8c8d',
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            },
+            x: {
+                grid: { color: 'rgba(0,0,0,0.05)' },
+                ticks: { color: '#7f8c8d' }
+            }
+        }
+    };
 
     return (
         <HubSpotLayout>
@@ -325,6 +522,17 @@ const Dashboard = () => {
 
                 {/* Key Metrics Cards */}
                 <div className="metrics-section">
+                    <div className="metrics-header">
+                        <h2>Key Metrics</h2>
+                        <button 
+                            className="guide-trigger-btn"
+                            onClick={startGuide}
+                            title="Start metrics guide"
+                        >
+                            <i className="fas fa-question-circle"></i>
+                            <span>Start Guide</span>
+                        </button>
+                    </div>
                     <div className="metrics-grid">
                         <div 
                             className="metric-card" 
@@ -437,7 +645,7 @@ const Dashboard = () => {
 
                         <div className="chart-card">
                             <div className="chart-header">
-                                <h3>Service Types</h3>
+                                <h3>Compliance Record</h3>
                                 <div className="chart-actions">
                                     <button className="chart-btn">
                                         <i className="fas fa-download"></i>
@@ -448,7 +656,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                             <div className="chart-container">
-                                <Bar data={serviceData} options={serviceOptions} />
+                                <Bar data={complianceRateChartData} options={complianceRateOptions} />
                             </div>
                         </div>
                     </div>
@@ -518,6 +726,14 @@ const Dashboard = () => {
                 isOpen={showWelcomeModal}
                 onClose={() => setShowWelcomeModal(false)}
                 userName={userName}
+            />
+
+            {/* Metrics Guide */}
+            <GridCardGuide 
+                isActive={showGuide}
+                onComplete={handleGuideComplete}
+                onSkip={handleGuideSkip}
+                steps={guideSteps}
             />
         </HubSpotLayout>
     );

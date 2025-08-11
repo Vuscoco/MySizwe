@@ -742,3 +742,271 @@ main.flex-1.flex.flex-col.overflow-auto.p-6 {
     
 
 } 
+
+/* Old Timetable Section Styles */
+.old-timetable-section {
+    padding: 20px 0;
+}
+
+.timetable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-schedule-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-schedule-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.no-schedule {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    grid-column: 1 / -1;
+}
+
+.no-schedule i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #cbd5e1;
+}
+
+.no-schedule p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.add-first-schedule-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-first-schedule-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.schedule-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s ease;
+}
+
+.schedule-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.schedule-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+}
+
+.schedule-type {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white;
+}
+
+.schedule-type.training {
+    background: #3b82f6;
+}
+
+.schedule-type.meeting {
+    background: #10b981;
+}
+
+.schedule-type.assessment {
+    background: #f59e0b;
+}
+
+.schedule-type.consultation {
+    background: #ef4444;
+}
+
+.schedule-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.schedule-info i {
+    width: 16px;
+    color: #9ca3af;
+}
+
+.schedule-description {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+.schedule-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-schedule-btn,
+.delete-schedule-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-schedule-btn {
+    background: white;
+    color: #64748b;
+}
+
+.edit-schedule-btn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+    border-color: #cbd5e1;
+}
+
+.delete-schedule-btn {
+    background: white;
+    color: #64748b;
+}
+
+.delete-schedule-btn:hover {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+/* Schedule Modal Styles */
+.schedule-form {
+    padding: 0 24px 24px 24px;
+}
+
+.schedule-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.schedule-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.schedule-form .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.schedule-form .form-group input,
+.schedule-form .form-group select,
+.schedule-form .form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.schedule-form .form-group input:focus,
+.schedule-form .form-group select:focus,
+.schedule-form .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.schedule-form .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Responsive Design for Schedule Section */
+@media (max-width: 768px) {
+    .timetable-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .schedule-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .schedule-actions {
+        flex-direction: column;
+    }
+} 

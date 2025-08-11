@@ -20,6 +20,55 @@
     margin: 0 0 2rem 0;
 }
 
+/* Metrics Header */
+.metrics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+}
+
+.metrics-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Guide Trigger Button */
+.guide-trigger-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.guide-trigger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+.guide-trigger-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.guide-trigger-btn i {
+    font-size: 1rem;
+}
+
 .metrics-grid {
     display: flex;
     gap: 0.25rem;
@@ -269,8 +318,6 @@
     color: #ffffff;
     box-shadow: 0 4px 16px rgba(255, 122, 89, 0.4);
 }
-
-
 
 .calendar-day {
     position: relative;
