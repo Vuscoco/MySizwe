@@ -431,6 +431,11 @@ const ProjectManagement = () => {
         return hasRedactedSkillsProgramIntervention();
     };
 
+    // Helper function to check if modules should be enabled (for redacted form - learnership only)
+    const shouldEnableRedactedModules = () => {
+        return hasRedactedLearnershipIntervention();
+    };
+
     // Helper function to format legacy qualifications placeholder
     const formatLegacyQualificationsPlaceholder = (selectedQualifications) => {
         if (!selectedQualifications || selectedQualifications.length === 0) {
@@ -1487,6 +1492,15 @@ const ProjectManagement = () => {
             modulesDropdown: modulesValue
         }));
         setShowModulesDropdown(false);
+    };
+
+    // Handler for separate modules selection in redacted form
+    const handleRedactedSeparateModulesSelection = (modulesValue, modulesLabel) => {
+        setRedactedFormData(prev => ({
+            ...prev,
+            separateModules: modulesValue
+        }));
+        setShowSeparateModulesDropdown(false);
     };
 
     // Handler for intervention cost change in redacted form
