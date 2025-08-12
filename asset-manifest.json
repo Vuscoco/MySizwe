@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/MySizwe/static/css/main.df0bbcdf.css",
+    "main.js": "/MySizwe/static/js/main.2f33ea6a.js",
+    "static/js/453.b4573518.chunk.js": "/MySizwe/static/js/453.b4573518.chunk.js",
+    "index.html": "/MySizwe/index.html",
+    "main.df0bbcdf.css.map": "/MySizwe/static/css/main.df0bbcdf.css.map",
+    "main.2f33ea6a.js.map": "/MySizwe/static/js/main.2f33ea6a.js.map",
+    "453.b4573518.chunk.js.map": "/MySizwe/static/js/453.b4573518.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.df0bbcdf.css",
+    "static/js/main.2f33ea6a.js"
+  ]
+}
