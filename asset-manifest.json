@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/sizwecrm/static/css/main.113f2b74.css",
+    "main.js": "/sizwecrm/static/js/main.d740e83a.js",
+    "static/js/453.b4573518.chunk.js": "/sizwecrm/static/js/453.b4573518.chunk.js",
+    "index.html": "/sizwecrm/index.html",
+    "main.113f2b74.css.map": "/sizwecrm/static/css/main.113f2b74.css.map",
+    "main.d740e83a.js.map": "/sizwecrm/static/js/main.d740e83a.js.map",
+    "453.b4573518.chunk.js.map": "/sizwecrm/static/js/453.b4573518.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.113f2b74.css",
+    "static/js/main.d740e83a.js"
+  ]
+}
