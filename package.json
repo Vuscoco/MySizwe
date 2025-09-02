@@ -2,7 +2,7 @@
   "name": "crmapp",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://vuscoco.github.io/sizwecrm",
+  "homepage": "https://vuscoco.github.io/crmapp",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
