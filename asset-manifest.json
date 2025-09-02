@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/crmapp/static/css/main.113f2b74.css",
-    "main.js": "/crmapp/static/js/main.f89fd85c.js",
-    "static/js/453.b4573518.chunk.js": "/crmapp/static/js/453.b4573518.chunk.js",
-    "index.html": "/crmapp/index.html",
-    "main.113f2b74.css.map": "/crmapp/static/css/main.113f2b74.css.map",
-    "main.f89fd85c.js.map": "/crmapp/static/js/main.f89fd85c.js.map",
-    "453.b4573518.chunk.js.map": "/crmapp/static/js/453.b4573518.chunk.js.map"
+    "main.css": "/MySizwe/static/css/main.113f2b74.css",
+    "main.js": "/MySizwe/static/js/main.2e5469a8.js",
+    "static/js/453.b4573518.chunk.js": "/MySizwe/static/js/453.b4573518.chunk.js",
+    "index.html": "/MySizwe/index.html",
+    "main.113f2b74.css.map": "/MySizwe/static/css/main.113f2b74.css.map",
+    "main.2e5469a8.js.map": "/MySizwe/static/js/main.2e5469a8.js.map",
+    "453.b4573518.chunk.js.map": "/MySizwe/static/js/453.b4573518.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.113f2b74.css",
-    "static/js/main.f89fd85c.js"
+    "static/js/main.2e5469a8.js"
   ]
 }
